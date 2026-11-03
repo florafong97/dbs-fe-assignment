@@ -1,0 +1,223 @@
+{
+  "customer": {
+    "id": "cus_001",
+    "firstName": "Ava",
+    "lastName": "Chen",
+    "email": "ava.chen@example.com",
+    "segment": "retail",
+    "dailyTransferLimit": 5000,
+    "transferredToday": 0
+  },
+  "accounts": [
+    {
+      "id": "acc_checking",
+      "name": "Everyday Checking",
+      "type": "checking",
+      "maskedNumber": "•••• 4821",
+      "balance": 4280.55,
+      "currency": "SGD"
+    },
+    {
+      "id": "acc_savings",
+      "name": "Savings Plus",
+      "type": "savings",
+      "maskedNumber": "•••• 9930",
+      "balance": 12840,
+      "currency": "SGD"
+    },
+    {
+      "id": "acc_credit",
+      "name": "Rewards Card",
+      "type": "credit",
+      "maskedNumber": "•••• 7712",
+      "balance": -420.3,
+      "currency": "SGD"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn_2001",
+      "accountId": "acc_checking",
+      "date": "2026-10-19T18:42:00+08:00",
+      "description": "FairPrice Finest",
+      "category": "groceries",
+      "direction": "out",
+      "amount": 86.4,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2002",
+      "accountId": "acc_credit",
+      "date": "2026-10-19T12:10:00+08:00",
+      "description": "Grab",
+      "category": "transport",
+      "direction": "out",
+      "amount": 14.2,
+      "status": "pending"
+    },
+    {
+      "id": "txn_2003",
+      "accountId": "acc_checking",
+      "date": "2026-10-18T08:15:00+08:00",
+      "description": "Kopitiam Corner",
+      "category": "dining",
+      "direction": "out",
+      "amount": 6.8,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2004",
+      "accountId": "acc_credit",
+      "date": "2026-10-17T21:05:00+08:00",
+      "description": "Spotify",
+      "category": "subscriptions",
+      "direction": "out",
+      "amount": 10.98,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2005",
+      "accountId": "acc_checking",
+      "date": "2026-10-16T14:30:00+08:00",
+      "description": "PayNow from Marcus Lee",
+      "category": "transfer",
+      "direction": "in",
+      "amount": 45,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2006",
+      "accountId": "acc_savings",
+      "date": "2026-10-15T09:00:00+08:00",
+      "description": "Salary — Northwind Labs",
+      "category": "income",
+      "direction": "in",
+      "amount": 3200,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2007",
+      "accountId": "acc_checking",
+      "date": "2026-10-14T19:22:00+08:00",
+      "description": "SP Group",
+      "category": "bills",
+      "direction": "out",
+      "amount": 92.15,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2008",
+      "accountId": "acc_credit",
+      "date": "2026-10-13T16:40:00+08:00",
+      "description": "Uniqlo",
+      "category": "shopping",
+      "direction": "out",
+      "amount": 59.9,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2009",
+      "accountId": "acc_savings",
+      "date": "2026-10-12T10:00:00+08:00",
+      "description": "Transfer to Jamie Tan",
+      "category": "transfer",
+      "direction": "out",
+      "amount": 120,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2010",
+      "accountId": "acc_checking",
+      "date": "2026-10-11T08:05:00+08:00",
+      "description": "Coffee Bean & Tea Leaf",
+      "category": "dining",
+      "direction": "out",
+      "amount": 7.2,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2011",
+      "accountId": "acc_credit",
+      "date": "2026-10-10T20:00:00+08:00",
+      "description": "Netflix",
+      "category": "subscriptions",
+      "direction": "out",
+      "amount": 17.98,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2012",
+      "accountId": "acc_checking",
+      "date": "2026-10-09T18:30:00+08:00",
+      "description": "Shell",
+      "category": "transport",
+      "direction": "out",
+      "amount": 68,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2013",
+      "accountId": "acc_checking",
+      "date": "2026-10-08T13:15:00+08:00",
+      "description": "Guardian",
+      "category": "health",
+      "direction": "out",
+      "amount": 23.45,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2014",
+      "accountId": "acc_savings",
+      "date": "2026-10-07T09:00:00+08:00",
+      "description": "Bonus interest",
+      "category": "income",
+      "direction": "in",
+      "amount": 12.4,
+      "status": "posted"
+    },
+    {
+      "id": "txn_2015",
+      "accountId": "acc_checking",
+      "date": "2026-10-06T17:45:00+08:00",
+      "description": "PayNow to Priya Nair",
+      "category": "transfer",
+      "direction": "out",
+      "amount": 50,
+      "status": "posted"
+    }
+  ],
+  "payees": [
+    {
+      "id": "pay_001",
+      "name": "Jamie Tan",
+      "bank": "DBS",
+      "accountNumber": "55213391",
+      "initials": "JT",
+      "lastUsedAt": "2026-10-19T09:10:00+08:00"
+    },
+    {
+      "id": "pay_002",
+      "name": "Marcus Lee",
+      "bank": "OCBC",
+      "accountNumber": "88102240",
+      "initials": "ML",
+      "lastUsedAt": "2026-10-16T14:30:00+08:00"
+    },
+    {
+      "id": "pay_003",
+      "name": "Priya Nair",
+      "bank": "UOB",
+      "accountNumber": "77181174",
+      "initials": "PN",
+      "lastUsedAt": "2026-10-08T11:20:00+08:00"
+    },
+    {
+      "id": "pay_004",
+      "name": "Mum",
+      "bank": "POSB",
+      "accountNumber": "10936620",
+      "initials": "M",
+      "lastUsedAt": "2026-09-30T19:05:00+08:00"
+    }
+  ]
+}

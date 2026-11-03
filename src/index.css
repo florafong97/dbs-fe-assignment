@@ -1,0 +1,78 @@
+@import '../brief/design-tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: var(--leading-normal);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+code {
+  background: var(--surface-muted);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+}
+
+.starter {
+  margin: 0 auto;
+  max-width: 720px;
+  padding: var(--space-8) var(--space-4);
+}
+
+.starter-header {
+  align-items: baseline;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+  padding-bottom: var(--space-3);
+}
+
+.starter-header strong {
+  font-size: var(--text-lg);
+}
+
+.starter-header span {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.starter-main {
+  padding-top: var(--space-6);
+}
+
+.starter-main h1 {
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+.starter-main p,
+.starter-main li {
+  color: var(--text-muted);
+}
+
+.status {
+  color: var(--positive);
+  font-weight: var(--weight-semibold);
+}
