@@ -324,3 +324,173 @@
     overflow-x: visible;
   }
 }
+
+.transactions-card {
+  padding-top: var(--space-2);
+  padding-bottom: 0;
+}
+
+.transactions-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.transactions-header h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+.transactions-section {
+  min-width: 0;
+}
+
+.transaction-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: var(--surface);
+}
+
+.transaction-search > svg {
+  flex-shrink: 0;
+}
+
+.transaction-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tap-target);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--text-sm);
+}
+
+.transaction-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.transaction-search input:focus {
+  outline: none;
+}
+
+.transaction-search input:focus-visible:not([data-pointer-focus="true"]) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.transaction-search input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.transaction-search button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.transaction-count {
+  margin: var(--space-4) 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.transaction-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.transaction-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+}
+
+.transaction-row + .transaction-row {
+  border-top: 1px solid var(--border);
+}
+
+.transaction-details {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.transaction-description,
+.transaction-amount {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.transaction-meta {
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.transaction-category {
+  text-transform: capitalize;
+}
+
+.transaction-value {
+  text-align: right;
+}
+
+.transaction-incoming {
+  color: var(--positive);
+}
+
+.pending-chip {
+  display: inline-block;
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+}
+
+.transactions-empty {
+  padding-block: var(--space-6);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.clear-search-button {
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+@media (min-width: 640px) {
+  .transactions-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .transaction-search {
+    flex: 0 1 280px;
+  }
+}

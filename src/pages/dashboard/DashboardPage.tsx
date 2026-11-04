@@ -1,3 +1,4 @@
+import TransactionList from "./components/TransactionList";
 import AccountCard from "./components/AccountCard";
 import BalanceHero from "./components/BalanceHero";
 import DailyLimitCard from "./components/DailyLimitCard";
@@ -57,12 +58,7 @@ export default function DashboardPage() {
               <div className="accounts-placeholder" />
             )}
           </section>
-          <section
-            className="dashboard-panel transactions-placeholder"
-            aria-labelledby="transactions-heading"
-          >
-            <h2 id="transactions-heading">Recent transactions</h2>
-          </section>
+          <TransactionList transactions={dashboard.transactions.data?.transactions} />
         </div>
         <DailyLimitCard customer={dashboard.customer.data?.customer} />
       </main>
