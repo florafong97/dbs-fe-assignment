@@ -8,6 +8,8 @@
 
 ## Before implementation
 
+- Current workflow: do not write new tests or modify existing tests until the user asks to resume test work. Keep existing tests; verify changes with lint, typecheck, build and relevant manual checks. The assignment's test requirements below remain deferred submission obligations.
+
 Before implementing each feature, present a concise proposal covering:
 - Implementation plan and approach.
 - Proposed state management: server, form and UI state ownership, including derived state.
