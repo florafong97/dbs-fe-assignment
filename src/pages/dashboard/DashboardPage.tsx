@@ -14,7 +14,7 @@ export default function DashboardPage() {
       <a className="skip-link" href="#overview">
         Skip to dashboard
       </a>
-      <Header />
+      <Header defaultSegment={dashboard.customer.data?.customer.segment} />
       <main
         id="overview"
         className="dashboard-container dashboard-layout"

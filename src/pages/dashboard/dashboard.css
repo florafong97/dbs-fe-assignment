@@ -494,3 +494,17 @@
     flex: 0 1 280px;
   }
 }
+
+.theme-control,
+.segment-control button {
+  cursor: pointer;
+}
+
+.theme-control:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.segment-control button:hover {
+  color: var(--brand);
+}
