@@ -39,3 +39,29 @@ a {
 button:disabled {
   cursor: not-allowed;
 }
+
+.app-container {
+  width: min(var(--container), calc(100% - 2 * var(--gutter-mobile)));
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-4);
+  z-index: var(--z-header);
+  padding: var(--space-3);
+  background: var(--surface);
+  color: var(--text);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (min-width: 640px) {
+  .app-container {
+    width: min(var(--container), calc(100% - 2 * var(--gutter)));
+  }
+}

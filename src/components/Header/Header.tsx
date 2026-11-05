@@ -1,17 +1,18 @@
 import { Moon, Sun } from "lucide-react";
-import type { Segment } from "../../../api/types";
-import { usePreferences } from "../../../theme/usePreferences";
+import type { Segment } from "../../api/types";
+import "./Header.css";
 
-export default function Header({
-  defaultSegment,
-}: {
-  defaultSegment?: Segment;
-}) {
-  const { theme, segment, toggleTheme, selectSegment } =
-    usePreferences(defaultSegment);
+interface HeaderProps {
+  theme: 'light' | 'dark';
+  segment: Segment;
+  onToggleTheme: () => void;
+  onSelectSegment: (segment: Segment) => void;
+}
+
+export default function Header({ theme, segment, onToggleTheme, onSelectSegment }: HeaderProps) {
   return (
-    <header className="dashboard-header">
-      <div className="dashboard-container header-layout">
+    <header className="app-header">
+      <div className="app-container header-layout">
         <a className="brand" href="#overview" aria-label="Meridian overview">
           <span className="brand-mark" aria-hidden="true">
             M
@@ -42,14 +43,14 @@ export default function Header({
           <button
             type="button"
             aria-pressed={segment === "retail"}
-            onClick={() => selectSegment("retail")}
+            onClick={() => onSelectSegment("retail")}
           >
             Retail
           </button>
           <button
             type="button"
             aria-pressed={segment === "premium"}
-            onClick={() => selectSegment("premium")}
+            onClick={() => onSelectSegment("premium")}
           >
             Premium
           </button>
@@ -61,7 +62,7 @@ export default function Header({
             type="button"
             aria-label="Dark mode"
             aria-pressed={theme === "dark"}
-            onClick={toggleTheme}
+            onClick={onToggleTheme}
           >
             {theme === "dark" ? (
               <Sun size={20} strokeWidth={1.5} aria-hidden="true" />
@@ -74,7 +75,7 @@ export default function Header({
           </span>
         </div>
 
-        <h1 className="dashboard-greeting">Good evening, Ava</h1>
+        <h1 className="header-greeting">Good evening, Ava</h1>
       </div>
     </header>
   );

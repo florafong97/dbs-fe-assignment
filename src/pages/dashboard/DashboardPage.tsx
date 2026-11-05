@@ -3,40 +3,52 @@ import TransactionList from "./components/TransactionList";
 import AccountCard from "./components/AccountCard";
 import BalanceHero from "./components/BalanceHero";
 import DailyLimitCard from "./components/DailyLimitCard";
-import Header from "./components/Header";
-import { useDashboardQueries } from "./queries";
+import type { Account, Customer, Transaction } from "../../api/types";
 import "./dashboard.css";
 
-export default function DashboardPage() {
-  const dashboard = useDashboardQueries();
-  const isLoading = dashboard.isPending && !dashboard.isError;
-  const accounts = isLoading ? undefined : dashboard.accounts.data?.accounts;
-  const customer = isLoading ? undefined : dashboard.customer.data?.customer;
-  const transactions = isLoading ? undefined : dashboard.transactions.data?.transactions;
+interface DashboardPageProps {
+  accounts?: Account[];
+  customer?: Customer;
+  transactions?: Transaction[];
+  isPending: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  onRetry: () => void;
+}
+
+export default function DashboardPage({
+  accounts: accountData,
+  customer: customerData,
+  transactions: transactionData,
+  isPending,
+  isError,
+  isFetching,
+  onRetry,
+}: DashboardPageProps) {
+  const isLoading = isPending && !isError;
+  const accounts = isLoading ? undefined : accountData;
+  const customer = isLoading ? undefined : customerData;
+  const transactions = isLoading ? undefined : transactionData;
 
   return (
     <>
-      <a className="skip-link" href="#overview">
-        Skip to dashboard
-      </a>
-      <Header defaultSegment={dashboard.customer.data?.customer.segment} />
       <p className="visually-hidden" role="status">
-        {isLoading ? "Loading dashboard…" : dashboard.isError ? "" : "Dashboard loaded."}
+        {isLoading ? "Loading dashboard…" : isError ? "" : "Dashboard loaded."}
       </p>
       <main
         id="overview"
-        className="dashboard-container dashboard-layout"
+        className="app-container dashboard-layout"
         tabIndex={-1}
         aria-busy={isLoading}
       >
-        {dashboard.isError ? (
+        {isError ? (
           <div className="dashboard-feedback">
             <p role="alert">We couldn't load your dashboard.</p>
             <button
               className="retry-button"
               type="button"
-              disabled={dashboard.isFetching}
-              onClick={() => void dashboard.retry()}
+              disabled={isFetching}
+              onClick={onRetry}
             >
               Retry
             </button>
