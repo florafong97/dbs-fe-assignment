@@ -19,11 +19,11 @@ ls dist/mockServiceWorker.js
 
 ## 2. Platform settings
 
-| Platform | Build command | Output | Notes |
-| --- | --- | --- | --- |
-| **Netlify** | `npm run build` | `dist` | Add new site → import the repo. Vite is detected. Set `NODE_VERSION=22` if the build image is old. |
-| **Vercel** | `npm run build` | `dist` | Add New Project → framework preset **Vite**. Usually no config. |
-| **Cloudflare Pages** | `npm run build` | `dist` | Create project → framework preset **Vite**. Set `NODE_VERSION=22` if prompted. |
+| Platform             | Build command   | Output | Notes                                                                                              |
+| -------------------- | --------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| **Netlify**          | `npm run build` | `dist` | Add new site → import the repo. Vite is detected. Set `NODE_VERSION=22` if the build image is old. |
+| **Vercel**           | `npm run build` | `dist` | Add New Project → framework preset **Vite**. Usually no config.                                    |
+| **Cloudflare Pages** | `npm run build` | `dist` | Create project → framework preset **Vite**. Set `NODE_VERSION=22` if prompted.                     |
 
 No redirects are needed: this is one page and the transfer is a dialog. If you
 add client-side routes, add a SPA fallback (`public/_redirects` on Netlify,
@@ -58,17 +58,17 @@ The three platforms above are simpler.
 
 ## 5. Common failures
 
-| Symptom | Likely cause | Fix |
-| --- | --- | --- |
-| `mockServiceWorker.js` 404 | Worker not in `public/`, or wrong base path | Run `npx msw init public --save`; check `dist/`; use `${import.meta.env.BASE_URL}mockServiceWorker.js` |
-| Every request fails / `Mock API failed to start` in the console | Worker failed to start or was skipped in production | Start it unconditionally, await it, check the console |
-| API 404s on the deployed site but works locally | You are using the Vite proxy, which only exists in dev | Use MSW in the browser instead of the Node server |
-| Works on the first load, breaks after refresh | Stale service worker / base mismatch | Hard reload; unregister the worker in DevTools; check the scope |
-| Service worker never registers on a phone | You opened `http://192.168.x.x` (not a secure context) | Test the HTTPS deployment, or use an HTTPS tunnel |
-| Nothing intercepted in Safari private mode / in-app browser | Service workers are restricted | Use a normal browser window |
-| `/api/...` works at `/`, fails under `/repo/` | Base path not applied | Set Vite `base`, use `BASE_URL` for both the worker URL and API calls |
-| Old data after deploy | The page is controlled by the previous worker | Hard reload or “Update on reload” in DevTools |
-| Console warnings about unhandled requests | Vite assets pass through MSW | Use `onUnhandledRequest: 'bypass'` (the starter does) |
+| Symptom                                                         | Likely cause                                           | Fix                                                                                                    |
+| --------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `mockServiceWorker.js` 404                                      | Worker not in `public/`, or wrong base path            | Run `npx msw init public --save`; check `dist/`; use `${import.meta.env.BASE_URL}mockServiceWorker.js` |
+| Every request fails / `Mock API failed to start` in the console | Worker failed to start or was skipped in production    | Start it unconditionally, await it, check the console                                                  |
+| API 404s on the deployed site but works locally                 | You are using the Vite proxy, which only exists in dev | Use MSW in the browser instead of the Node server                                                      |
+| Works on the first load, breaks after refresh                   | Stale service worker / base mismatch                   | Hard reload; unregister the worker in DevTools; check the scope                                        |
+| Service worker never registers on a phone                       | You opened `http://192.168.x.x` (not a secure context) | Test the HTTPS deployment, or use an HTTPS tunnel                                                      |
+| Nothing intercepted in Safari private mode / in-app browser     | Service workers are restricted                         | Use a normal browser window                                                                            |
+| `/api/...` works at `/`, fails under `/repo/`                   | Base path not applied                                  | Set Vite `base`, use `BASE_URL` for both the worker URL and API calls                                  |
+| Old data after deploy                                           | The page is controlled by the previous worker          | Hard reload or “Update on reload” in DevTools                                                          |
+| Console warnings about unhandled requests                       | Vite assets pass through MSW                           | Use `onUnhandledRequest: 'bypass'` (the starter does)                                                  |
 
 ## 6. Quick verification
 

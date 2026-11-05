@@ -11,9 +11,9 @@ interface TransactionListProps {
   isDashboardLoading?: boolean
 }
 
-function TransactionListItemSkeleton({ key }: { key: number }) {
+function TransactionListItemSkeleton() {
   return (
-    <li className="transaction-row" key={key}>
+    <li className="transaction-row">
       <div className="transaction-details">
         <p className="transaction-description">
           <Skeleton />
@@ -33,7 +33,7 @@ function TransactionListItemSkeleton({ key }: { key: number }) {
 
 function TransactionListItem({ transaction }: { transaction: Transaction }) {
   return (
-    <li key={transaction.id} className="transaction-row">
+    <li className="transaction-row">
       <div className="transaction-details">
         <p className="transaction-description">{transaction.description}</p>
         <p className="transaction-meta">
@@ -100,7 +100,7 @@ export default function TransactionList({ isDashboardLoading = false }: Transact
           </div>
         ) : isLoading || matches === undefined ? (
           <ul className="transaction-list" aria-hidden="true">
-            {Array.from({ length: 3 }, (_, index) => (
+            {Array.from({ length: 8 }, (_, index) => (
               <TransactionListItemSkeleton key={index} />
             ))}
           </ul>
@@ -115,7 +115,7 @@ export default function TransactionList({ isDashboardLoading = false }: Transact
             {matches.length > 0 ? (
               <ul className="transaction-list">
                 {matches.map((transaction) => (
-                  <TransactionListItem transaction={transaction} />
+                  <TransactionListItem key={transaction.id} transaction={transaction} />
                 ))}
               </ul>
             ) : (

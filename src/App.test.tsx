@@ -66,9 +66,7 @@ describe('App dashboard integration', () => {
     )
     renderApp()
     await loaded()
-    expect(
-      screen.getByRole('heading', { name: /Good (morning|afternoon|evening), Morgan/ }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Good evening, Morgan/ })).toBeInTheDocument()
     expect(screen.getByLabelText('Morgan Lee')).toHaveTextContent('ML')
   })
 

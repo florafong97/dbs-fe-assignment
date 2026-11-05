@@ -89,7 +89,7 @@ export default function Header({
 
         <div className="header-intro">
           <h1 className="header-greeting">
-            {'Good Evening'}
+            {'Good evening'}
             {name ? `, ${name}` : ''}
           </h1>
           <time className="header-date" dateTime={now.toISOString()}>

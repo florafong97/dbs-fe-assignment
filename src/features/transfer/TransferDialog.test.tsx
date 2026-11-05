@@ -212,11 +212,11 @@ describe('transfer recipient step', () => {
     expect(screen.getByText('No recipients match your search.')).toBeInTheDocument()
     expect(screen.queryByRole('radio')).not.toBeInTheDocument()
     await user.click(
-      within(screen.getByText('No recipients match your search.').parentElement!).getByRole(
-        'button',
-        { name: 'Clear search' },
-      ),
+      within(screen.getByRole('group', { name: 'Saved recipients' })).getByRole('button', {
+        name: 'Clear search',
+      }),
     )
+    expect(search).toHaveValue('')
     expect(screen.getAllByRole('radio')).toHaveLength(4)
   })
 

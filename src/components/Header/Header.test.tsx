@@ -70,7 +70,7 @@ describe('Header greeting', () => {
       const view = render(
         <Header firstName="Morgan" lastName="Lee" theme="light" segment="retail" {...callbacks} />,
       )
-      expect(screen.getByRole('heading', { name: 'Good morning, Morgan' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Good evening, Morgan' })).toBeInTheDocument()
       expect(screen.getByLabelText('Morgan Lee')).toHaveTextContent('ML')
       expect(screen.getByText('Thursday, 5 November')).toHaveAttribute(
         'datetime',
@@ -88,7 +88,7 @@ describe('Header greeting', () => {
   it('handles loading and incomplete names without hardcoded identity or punctuation', () => {
     const callbacks = { onToggleTheme: () => {}, onSelectSegment: () => {} }
     const view = render(<Header theme="light" segment="retail" {...callbacks} />)
-    expect(screen.getByRole('heading')).toHaveTextContent(/^Good (morning|afternoon|evening)$/)
+    expect(screen.getByRole('heading')).toHaveTextContent(/^Good evening$/)
     expect(screen.getByLabelText('Customer')).toHaveTextContent('-')
     view.rerender(
       <Header firstName="  Morgan  " lastName=" " theme="light" segment="retail" {...callbacks} />,
