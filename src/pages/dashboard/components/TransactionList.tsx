@@ -1,3 +1,4 @@
+import Button from '@/components/Button/Button'
 import Skeleton from '@/components/Skeleton/Skeleton'
 import SearchInput from '@/components/SearchInput/SearchInput'
 import { useState } from 'react'
@@ -85,13 +86,9 @@ export default function TransactionList({ transactions }: { transactions?: Trans
               <div className="transactions-empty">
                 <p>{query ? 'No transactions match your search.' : 'No transactions yet.'}</p>
                 {query && (
-                  <button
-                    className="clear-search-button"
-                    type="button"
-                    onClick={() => setSearch('')}
-                  >
+                  <Button variant="secondary" onClick={() => setSearch('')}>
                     Clear search
-                  </button>
+                  </Button>
                 )}
               </div>
             )}

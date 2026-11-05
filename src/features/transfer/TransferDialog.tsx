@@ -1,3 +1,4 @@
+import Button from '@/components/Button/Button'
 import SuccessPanel from './components/SuccessPanel'
 import TransferStepper from './components/TransferStepper'
 import { ApiError } from '@/api/client'
@@ -254,21 +255,20 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
         </div>
         {!transfer.isSuccess && (
           <footer className="transfer-dialog-footer">
-            <button
-              className="transfer-secondary"
-              type="button"
+            <Button
+              variant="secondary"
               onClick={step === 'recipient' ? closeDialog : goBack}
               disabled={transfer.isPending}
             >
               {step === 'recipient' ? 'Cancel' : 'Back'}
-            </button>
-            <button className="transfer-primary" type="submit" disabled={transfer.isPending}>
+            </Button>
+            <Button variant="primary" type="submit" disabled={transfer.isPending}>
               {transfer.isPending
                 ? 'Sending…'
                 : step === 'review'
                   ? 'Confirm transfer'
                   : 'Continue'}
-            </button>
+            </Button>
           </footer>
         )}
       </form>

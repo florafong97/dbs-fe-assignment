@@ -1,3 +1,4 @@
+import Button from '@/components/Button/Button'
 import FormField from '@/components/FormField/FormField'
 import SearchInput from '@/components/SearchInput/SearchInput'
 import { useEffect, useRef, useState } from 'react'
@@ -59,14 +60,9 @@ export default function RecipientStep({
       {isError ? (
         <div>
           <p role="alert">We couldn't load your recipients.</p>
-          <button
-            className="transfer-secondary"
-            type="button"
-            disabled={isFetching}
-            onClick={onRetry}
-          >
+          <Button variant="secondary" disabled={isFetching} onClick={onRetry}>
             Retry
-          </button>
+          </Button>
         </div>
       ) : isPending ? (
         <div>

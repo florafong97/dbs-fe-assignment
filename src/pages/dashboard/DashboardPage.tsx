@@ -1,3 +1,4 @@
+import Button from '@/components/Button/Button'
 import AccountCardSkeleton from './components/AccountCardSkeleton'
 import TransactionList from './components/TransactionList'
 import AccountCard from './components/AccountCard'
@@ -46,9 +47,9 @@ export default function DashboardPage({
         {isError ? (
           <div className="dashboard-feedback">
             <p role="alert">We couldn't load your dashboard.</p>
-            <button className="retry-button" type="button" disabled={isFetching} onClick={onRetry}>
+            <Button variant="primary" disabled={isFetching} onClick={onRetry}>
               Retry
-            </button>
+            </Button>
           </div>
         ) : (
           <>

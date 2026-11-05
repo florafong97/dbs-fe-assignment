@@ -40,15 +40,6 @@
   margin-top: 0;
 }
 
-.retry-button {
-  min-height: var(--tap-target);
-  padding: var(--space-2) var(--space-4);
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: var(--brand);
-  color: var(--on-brand);
-}
-
 .dashboard-rail {
   min-height: 160px;
 }
@@ -260,15 +251,6 @@
   padding-block: var(--space-6);
   text-align: center;
   color: var(--text-muted);
-}
-
-.clear-search-button {
-  min-height: var(--tap-target);
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--text);
 }
 
 @media (min-width: 640px) {

@@ -1,3 +1,4 @@
+import Button from '@/components/Button/Button'
 import { useEffect, useRef } from 'react'
 import { CircleCheck } from 'lucide-react'
 import type { Transfer } from '@/api/types'
@@ -47,19 +48,14 @@ export default function SuccessPanel({
       {refreshFailed && (
         <div>
           <p role="alert">Your transfer was sent, but we couldn't refresh your dashboard.</p>
-          <button
-            className="transfer-secondary"
-            type="button"
-            onClick={onRetryRefresh}
-            disabled={isRefreshing}
-          >
+          <Button variant="secondary" onClick={onRetryRefresh} disabled={isRefreshing}>
             Retry dashboard refresh
-          </button>
+          </Button>
         </div>
       )}
-      <button className="transfer-primary" type="button" disabled={!canReturn} onClick={onReturn}>
+      <Button variant="primary" disabled={!canReturn} onClick={onReturn}>
         Back to dashboard
-      </button>
+      </Button>
     </section>
   )
 }
