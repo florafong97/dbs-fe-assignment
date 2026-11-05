@@ -1,0 +1,73 @@
+.review-step {
+  margin-top: var(--space-6);
+}
+
+.review-details {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.review-row {
+  display: grid;
+  grid-template-columns: var(--space-16) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: baseline;
+  font-size: var(--text-sm);
+}
+
+.review-row dt {
+  color: var(--text-muted);
+}
+
+.review-row dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.review-recipient-name,
+.review-recipient-details {
+  display: block;
+}
+
+.review-recipient-name {
+  font-weight: var(--weight-medium);
+}
+
+.review-recipient-details {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+}
+
+.review-money {
+  font-variant-numeric: tabular-nums;
+}
+
+.review-note {
+  white-space: pre-wrap;
+}
+
+.review-total {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-strong);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+.review-total dt {
+  color: var(--text);
+}
+
+.review-arrival {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-6) 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.review-arrival svg {
+  flex-shrink: 0;
+}
