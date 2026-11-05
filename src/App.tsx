@@ -31,7 +31,13 @@ export default function App() {
         onRetry={() => void dashboard.retry()}
         onNewTransfer={() => setIsTransferOpen(true)}
       />
-      {isTransferOpen && <TransferDialog onClose={() => setIsTransferOpen(false)} />}
+      {isTransferOpen && dashboard.accounts.data && dashboard.customer.data && (
+        <TransferDialog
+          accounts={dashboard.accounts.data.accounts}
+          customer={dashboard.customer.data.customer}
+          onClose={() => setIsTransferOpen(false)}
+        />
+      )}
     </>
   )
 }
