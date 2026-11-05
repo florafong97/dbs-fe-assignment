@@ -139,7 +139,8 @@
 @media (min-width: 1024px) {
   .transfer-dialog {
     width: 520px;
-    height: 560px;
+    height: 80dvh;
+    min-height: min(560px, calc(100dvh - 2 * var(--space-6)));
     max-height: calc(100dvh - 2 * var(--space-6));
     margin: auto;
     border: 1px solid var(--border);

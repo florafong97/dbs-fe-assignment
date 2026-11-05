@@ -119,7 +119,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
   }
 
   function closeDialog() {
-    if (canClose && !sendingRef.current) onClose()
+    if (canClose && !sendingRef.current) dialogRef.current?.close()
   }
 
   async function confirmTransfer() {
@@ -158,6 +158,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
     const trigger = document.activeElement
     const previousOverflow = document.body.style.overflow
     dialog.showModal()
+    dialog.querySelector<HTMLButtonElement>('.transfer-close')?.focus()
     document.body.style.overflow = 'hidden'
 
     return () => {
@@ -172,9 +173,9 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
       ref={dialogRef}
       className="transfer-dialog"
       aria-labelledby="transfer-title"
-      onCancel={(event) => {
-        event.preventDefault()
-        closeDialog()
+      closedby={canClose ? 'any' : 'none'}
+      onClose={(event) => {
+        if (!event.currentTarget.open) onClose()
       }}
     >
       <form
@@ -195,7 +196,6 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
               aria-label="Close transfer"
               onClick={closeDialog}
               disabled={!canClose}
-              autoFocus
             >
               <X size={20} aria-hidden="true" />
             </button>

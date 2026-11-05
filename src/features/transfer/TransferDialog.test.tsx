@@ -1,6 +1,6 @@
 import { setupDialogMock } from '@/test/dialog'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -23,16 +23,17 @@ function renderTransfer() {
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   })
   clients.push(client)
+  const onClose = vi.fn()
   const view = render(
     <QueryClientProvider client={client}>
       <TransferDialog
         accounts={seed.accounts as Account[]}
         customer={seed.customer as Customer}
-        onClose={vi.fn()}
+        onClose={onClose}
       />
     </QueryClientProvider>,
   )
-  return { ...view, client }
+  return { ...view, client, onClose }
 }
 
 async function payeesLoaded() {
@@ -55,6 +56,28 @@ async function reviewSavedTransfer(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('button', { name: 'Continue' }))
   await screen.findByRole('heading', { name: 'Check the details' })
 }
+
+describe('transfer dialog dismissal', () => {
+  it('opts into light dismissal and synchronizes a native close event', async () => {
+    const { onClose } = renderTransfer()
+    const dialog = screen.getByRole('dialog') as HTMLDialogElement
+    expect(dialog).toHaveAttribute('closedby', 'any')
+    // jsdom does not implement backdrop clicks or Escape. Both native paths
+    // close the dialog and dispatch the same close event, modelled by the shim.
+    await act(async () => dialog.close())
+    expect(dialog.open).toBe(false)
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['Close transfer', 'Cancel'])('closes natively through %s', async (name) => {
+    const user = userEvent.setup()
+    const { onClose } = renderTransfer()
+    const dialog = screen.getByRole('dialog') as HTMLDialogElement
+    await user.click(screen.getByRole('button', { name }))
+    expect(dialog.open).toBe(false)
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+})
 
 describe('transfer recipient step', () => {
   it('loads all four masked payees, supports keyboard selection and advances without sending money', async () => {

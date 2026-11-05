@@ -2,7 +2,8 @@ import { setupDialogMock } from '@/test/dialog'
 import { formatMoney } from '@/lib/format'
 import type { TransferResponse } from '@/api/types'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { StrictMode } from 'react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -18,14 +19,20 @@ afterEach(() => {
   clients.length = 0
 })
 
-function renderApp() {
+function renderApp(strictMode = false) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   })
   clients.push(client)
   return render(
     <QueryClientProvider client={client}>
-      <App />
+      {strictMode ? (
+        <StrictMode>
+          <App />
+        </StrictMode>
+      ) : (
+        <App />
+      )}
     </QueryClientProvider>,
   )
 }
@@ -204,6 +211,29 @@ describe('App transfer integration', () => {
   beforeEach(() => vi.setSystemTime(new Date('2026-10-20T10:15:00Z')))
   afterEach(() => vi.useRealTimers())
 
+  it('synchronizes native dismissal, restores focus and scroll, and reopens in Strict Mode', async () => {
+    const user = userEvent.setup()
+    renderApp(true)
+    const trigger = await screen.findByRole('button', { name: 'New transfer' })
+    const previousOverflow = document.body.style.overflow
+    await user.click(trigger)
+    const dialog = screen.getByRole('dialog') as HTMLDialogElement
+    expect(dialog.open).toBe(true)
+    expect(document.body.style.overflow).toBe('hidden')
+    await act(async () => dialog.close())
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(document.body.style.overflow).toBe(previousOverflow)
+    expect(trigger).toHaveFocus()
+
+    await user.click(trigger)
+    expect(screen.getByRole('dialog')).toHaveAttribute('open')
+    expect(screen.getByRole('heading', { name: 'Who are you sending to?' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Close transfer' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+    expect(document.body.style.overflow).toBe(previousOverflow)
+  })
+
   it('sends once, displays the API reference and refreshes balance, transactions and daily limit', async () => {
     const user = userEvent.setup()
     let responseBody: TransferResponse | undefined
@@ -220,12 +250,14 @@ describe('App transfer integration', () => {
     expect(screen.getByRole('button', { name: 'Sending…' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Close transfer' })).toBeDisabled()
+    expect(screen.getByRole('dialog')).toHaveAttribute('closedby', 'none')
     await screen.findByRole('heading', { name: 'Transfer sent' }, { timeout: 3000 })
     const confirmation = screen.getByRole('region', { name: 'Transfer confirmation' })
     expect(responseBody).toBeDefined()
     expect(confirmation).toHaveTextContent(responseBody!.transfer.reference)
     const back = screen.getByRole('button', { name: 'Back to dashboard' })
     await waitFor(() => expect(back).toBeEnabled(), { timeout: 3000 })
+    expect(screen.getByRole('dialog')).toHaveAttribute('closedby', 'any')
     const posts = fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(posts).toHaveLength(1)
     expect(JSON.parse(String(posts[0][1]?.body))).toEqual({

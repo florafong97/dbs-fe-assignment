@@ -1,7 +1,7 @@
 import { afterAll, beforeAll } from 'vitest'
 
-// jsdom has no native modal behaviour. These shims expose open/close only;
-// browser focus containment and responsive layout require browser checks.
+// jsdom has no native modal behaviour. Model open/close and its queued event;
+// light dismissal, focus containment and layout require browser checks.
 export function setupDialogMock() {
   const originalShowModal = Object.getOwnPropertyDescriptor(
     HTMLDialogElement.prototype,
@@ -18,7 +18,9 @@ export function setupDialogMock() {
     Object.defineProperty(HTMLDialogElement.prototype, 'close', {
       configurable: true,
       value(this: HTMLDialogElement) {
+        if (!this.open) return
         this.removeAttribute('open')
+        queueMicrotask(() => this.dispatchEvent(new Event('close')))
       },
     })
   })
