@@ -11,6 +11,7 @@
 - Current workflow: do not write new tests or modify existing tests until the user asks to resume test work. Keep existing tests; verify changes with lint, typecheck, build and relevant manual checks. The assignment's test requirements below remain deferred submission obligations.
 
 Before implementing each feature, present a concise proposal covering:
+
 - Implementation plan and approach.
 - Proposed state management: server, form and UI state ownership, including derived state.
 - Component breakdown and responsibilities.
@@ -25,6 +26,9 @@ Before implementing each feature, present a concise proposal covering:
 - Optional only: daily-limit progress bar, discard confirmation, debug menu, balance hiding, third segment, `#transfer` deep link, E2E test, CI, date line and another-transfer action. Suggested component names are not prescribed.
 
 ## Stack and architecture
+
+- Formatting: use Prettier (`npm run format`; verify with `npm run format:check`). Follow `.prettierrc.json` and `.editorconfig`; respect `.prettierignore` for generated and supplied mock files. ESLint checks code quality, not formatting.
+- `@/` is the only alias and maps to `src/`; keep TypeScript, Vite and Vitest aligned. Imports outside `src/` stay relative. Do not relocate files just to change import spelling.
 
 - Starter: Node 22, React 19, strict TypeScript, Vite, TanStack Query, React Hook Form, Zod, MSW and Vitest. No `any`.
 - Use TanStack Query or equivalent for server loading/errors/cache/refresh, and React Hook Form + Zod or equivalent for forms. Additional libraries are allowed with an explained rationale in README.

@@ -1,12 +1,12 @@
-import { Moon, Sun } from "lucide-react";
-import type { Segment } from "../../api/types";
-import "./Header.css";
+import { Moon, Sun } from 'lucide-react'
+import type { Segment } from '@/api/types'
+import './Header.css'
 
 interface HeaderProps {
-  theme: 'light' | 'dark';
-  segment: Segment;
-  onToggleTheme: () => void;
-  onSelectSegment: (segment: Segment) => void;
+  theme: 'light' | 'dark'
+  segment: Segment
+  onToggleTheme: () => void
+  onSelectSegment: (segment: Segment) => void
 }
 
 export default function Header({ theme, segment, onToggleTheme, onSelectSegment }: HeaderProps) {
@@ -35,22 +35,18 @@ export default function Header({ theme, segment, onToggleTheme, onSelectSegment 
           </button>
         </nav>
 
-        <div
-          className="segment-control"
-          role="group"
-          aria-label="Customer segment"
-        >
+        <div className="segment-control" role="group" aria-label="Customer segment">
           <button
             type="button"
-            aria-pressed={segment === "retail"}
-            onClick={() => onSelectSegment("retail")}
+            aria-pressed={segment === 'retail'}
+            onClick={() => onSelectSegment('retail')}
           >
             Retail
           </button>
           <button
             type="button"
-            aria-pressed={segment === "premium"}
-            onClick={() => onSelectSegment("premium")}
+            aria-pressed={segment === 'premium'}
+            onClick={() => onSelectSegment('premium')}
           >
             Premium
           </button>
@@ -61,10 +57,10 @@ export default function Header({ theme, segment, onToggleTheme, onSelectSegment 
             className="theme-control"
             type="button"
             aria-label="Dark mode"
-            aria-pressed={theme === "dark"}
+            aria-pressed={theme === 'dark'}
             onClick={onToggleTheme}
           >
-            {theme === "dark" ? (
+            {theme === 'dark' ? (
               <Sun size={20} strokeWidth={1.5} aria-hidden="true" />
             ) : (
               <Moon size={20} strokeWidth={1.5} aria-hidden="true" />
@@ -78,5 +74,5 @@ export default function Header({ theme, segment, onToggleTheme, onSelectSegment 
         <h1 className="header-greeting">Good evening, Ava</h1>
       </div>
     </header>
-  );
+  )
 }

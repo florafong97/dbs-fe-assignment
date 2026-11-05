@@ -215,7 +215,7 @@
   outline: none;
 }
 
-.transaction-search input:focus-visible:not([data-pointer-focus="true"]) {
+.transaction-search input:focus-visible:not([data-pointer-focus='true']) {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }

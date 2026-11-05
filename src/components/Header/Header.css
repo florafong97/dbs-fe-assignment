@@ -1,7 +1,7 @@
 .header-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "brand actions" "greeting greeting" "segment segment";
+  grid-template-areas: 'brand actions' 'greeting greeting' 'segment segment';
   align-items: center;
   gap: var(--space-4);
   padding-block: var(--space-3) var(--space-6);
@@ -82,7 +82,7 @@
   font-weight: var(--weight-medium);
 }
 
-.segment-control [aria-pressed="true"] {
+.segment-control [aria-pressed='true'] {
   background: var(--surface);
   color: var(--brand);
   box-shadow: var(--shadow-sm);
@@ -100,7 +100,7 @@
 @media (min-width: 1024px) {
   .header-layout {
     grid-template-columns: auto minmax(0, 1fr) auto auto;
-    grid-template-areas: "brand nav segment actions" "greeting greeting greeting greeting";
+    grid-template-areas: 'brand nav segment actions' 'greeting greeting greeting greeting';
     column-gap: var(--space-6);
   }
 
@@ -124,7 +124,7 @@
     text-decoration: none;
   }
 
-  .header-nav [aria-current="page"] {
+  .header-nav [aria-current='page'] {
     color: var(--brand);
     font-weight: var(--weight-semibold);
   }
@@ -143,4 +143,3 @@
 .segment-control button:hover {
   color: var(--brand);
 }
-

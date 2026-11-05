@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Segment } from '../api/types'
+import type { Segment } from '@/api/types'
 
 type Theme = 'light' | 'dark'
 

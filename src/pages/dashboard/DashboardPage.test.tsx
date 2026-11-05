@@ -2,10 +2,10 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import type { ComponentProps } from 'react'
-import type { Account, Customer, Transaction } from '../../api/types'
+import type { Account, Customer, Transaction } from '@/api/types'
 import seed from '../../../mock-api/db.json'
 import DashboardPage from './DashboardPage'
-import { formatMoney, formatShortDate } from '../../lib/format'
+import { formatMoney, formatShortDate } from '@/lib/format'
 
 const props: ComponentProps<typeof DashboardPage> = {
   accounts: seed.accounts as Account[],
@@ -68,118 +68,107 @@ describe('DashboardPage', () => {
     expect(screen.getByRole('searchbox')).toBeEnabled()
   })
 
-  it("shows deposit-only total, masked account balances and remaining daily limit", () => {
-    renderDashboard({ customer: { ...props.customer!, transferredToday: 120 } });
-    expect(
-      screen.getByRole("region", { name: "Total available" }),
-    ).toHaveTextContent(money(17120.55));
-    expect(screen.getByText("Across 2 deposit accounts")).toBeInTheDocument();
-    const accounts = within(
-      screen.getByRole("list", { name: "Accounts" }),
-    ).getAllByRole("listitem");
-    expect(accounts).toHaveLength(3);
+  it('shows deposit-only total, masked account balances and remaining daily limit', () => {
+    renderDashboard({ customer: { ...props.customer!, transferredToday: 120 } })
+    expect(screen.getByRole('region', { name: 'Total available' })).toHaveTextContent(
+      money(17120.55),
+    )
+    expect(screen.getByText('Across 2 deposit accounts')).toBeInTheDocument()
+    const accounts = within(screen.getByRole('list', { name: 'Accounts' })).getAllByRole('listitem')
+    expect(accounts).toHaveLength(3)
     seed.accounts.forEach((account, index) => {
-      expect(accounts[index]).toHaveTextContent(account.name);
-      expect(accounts[index]).toHaveTextContent(account.maskedNumber);
-      expect(accounts[index]).toHaveTextContent(money(account.balance));
-    });
-    expect(accounts[2]).toHaveTextContent("Amount due");
-    expect(
-      screen.getByRole("complementary", { name: "Daily limit" }),
-    ).toHaveTextContent(money(4880));
-  });
+      expect(accounts[index]).toHaveTextContent(account.name)
+      expect(accounts[index]).toHaveTextContent(account.maskedNumber)
+      expect(accounts[index]).toHaveTextContent(money(account.balance))
+    })
+    expect(accounts[2]).toHaveTextContent('Amount due')
+    expect(screen.getByRole('complementary', { name: 'Daily limit' })).toHaveTextContent(
+      money(4880),
+    )
+  })
 
-  it("renders the eight newest transactions with direction, dates and pending status", () => {
-    renderDashboard();
-    expect(rows()).toHaveLength(8);
+  it('renders the eight newest transactions with direction, dates and pending status', () => {
+    renderDashboard()
+    expect(rows()).toHaveLength(8)
     seed.transactions.slice(0, 8).forEach((transaction, index) => {
-      const row = rows()[index];
-      expect(row).toHaveTextContent(transaction.description);
-      expect(row).toHaveTextContent(transaction.category);
-      expect(row).toHaveTextContent(formatShortDate(transaction.date));
+      const row = rows()[index]
+      expect(row).toHaveTextContent(transaction.description)
+      expect(row).toHaveTextContent(transaction.category)
+      expect(row).toHaveTextContent(formatShortDate(transaction.date))
       expect(row).toHaveTextContent(
-        transaction.direction === "in"
+        transaction.direction === 'in'
           ? `+${money(transaction.amount)}`
           : money(-transaction.amount),
-      );
-      expect(within(row).queryByText("Pending") !== null).toBe(
-        transaction.status === "pending",
-      );
-    });
-  });
+      )
+      expect(within(row).queryByText('Pending') !== null).toBe(transaction.status === 'pending')
+    })
+  })
 
-  it("shows Singapore dates across midnight and zero amounts without a negative sign for incoming money", () => {
+  it('shows Singapore dates across midnight and zero amounts without a negative sign for incoming money', () => {
     renderDashboard({
-      transactions: [{
-        ...props.transactions![0],
-        date: "2026-10-18T18:30:00Z",
-        amount: 0,
-        direction: "in",
-      }],
-    });
-    expect(rows()[0]).toHaveTextContent("19 Oct");
-    expect(rows()[0]).toHaveTextContent(`+${money(0)}`);
-  });
+      transactions: [
+        {
+          ...props.transactions![0],
+          date: '2026-10-18T18:30:00Z',
+          amount: 0,
+          direction: 'in',
+        },
+      ],
+    })
+    expect(rows()[0]).toHaveTextContent('19 Oct')
+    expect(rows()[0]).toHaveTextContent(`+${money(0)}`)
+  })
 
-  it("filters description OR category without case sensitivity and clears with the keyboard", async () => {
-    const user = userEvent.setup();
-    renderDashboard();
-    const search = screen.getByRole("searchbox", {
-      name: "Search transactions",
-    });
-    await user.type(search, "  FAIRprice  ");
-    expect(rows()).toHaveLength(1);
-    expect(rows()[0]).toHaveTextContent("FairPrice Finest");
-    expect(screen.getByText("1 result match your search")).toBeInTheDocument();
-    await user.clear(search);
-    await user.type(search, "INCOME");
-    expect(rows()).toHaveLength(1);
-    expect(rows()[0]).toHaveTextContent("Salary — Northwind Labs");
-    await user.tab();
-    expect(screen.getByRole("button", { name: "Clear search" })).toHaveFocus();
-    await user.keyboard("{Enter}");
-    expect(search).toHaveValue("");
-    expect(rows()).toHaveLength(8);
-    await user.type(search, "   ");
-    expect(rows()).toHaveLength(8);
-  });
+  it('filters description OR category without case sensitivity and clears with the keyboard', async () => {
+    const user = userEvent.setup()
+    renderDashboard()
+    const search = screen.getByRole('searchbox', {
+      name: 'Search transactions',
+    })
+    await user.type(search, '  FAIRprice  ')
+    expect(rows()).toHaveLength(1)
+    expect(rows()[0]).toHaveTextContent('FairPrice Finest')
+    expect(screen.getByText('1 result match your search')).toBeInTheDocument()
+    await user.clear(search)
+    await user.type(search, 'INCOME')
+    expect(rows()).toHaveLength(1)
+    expect(rows()[0]).toHaveTextContent('Salary — Northwind Labs')
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Clear search' })).toHaveFocus()
+    await user.keyboard('{Enter}')
+    expect(search).toHaveValue('')
+    expect(rows()).toHaveLength(8)
+    await user.type(search, '   ')
+    expect(rows()).toHaveLength(8)
+  })
 
-  it("reports plural match counts and restores results from a no-match state", async () => {
-    const user = userEvent.setup();
-    renderDashboard();
-    const search = screen.getByRole("searchbox");
-    await user.type(search, "o");
-    expect(rows().length).toBeGreaterThan(1);
-    expect(
-      screen.getByText(`${rows().length} results match your search`),
-    ).toBeInTheDocument();
-    await user.clear(search);
-    await user.type(search, "no-such-transaction");
-    const emptyMessage = screen.getByText("No transactions match your search.");
-    expect(emptyMessage).toBeInTheDocument();
-    expect(
-      within(transactionSection()).queryByRole("list"),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText("0 results match your search")).toBeInTheDocument();
+  it('reports plural match counts and restores results from a no-match state', async () => {
+    const user = userEvent.setup()
+    renderDashboard()
+    const search = screen.getByRole('searchbox')
+    await user.type(search, 'o')
+    expect(rows().length).toBeGreaterThan(1)
+    expect(screen.getByText(`${rows().length} results match your search`)).toBeInTheDocument()
+    await user.clear(search)
+    await user.type(search, 'no-such-transaction')
+    const emptyMessage = screen.getByText('No transactions match your search.')
+    expect(emptyMessage).toBeInTheDocument()
+    expect(within(transactionSection()).queryByRole('list')).not.toBeInTheDocument()
+    expect(screen.getByText('0 results match your search')).toBeInTheDocument()
     await user.click(
-      within(emptyMessage.parentElement!).getByRole("button", { name: "Clear search" }),
-    );
-    expect(rows()).toHaveLength(8);
-  });
+      within(emptyMessage.parentElement!).getByRole('button', { name: 'Clear search' }),
+    )
+    expect(rows()).toHaveLength(8)
+  })
 
-  it("handles zero deposit balances and an exhausted daily limit", () => {
+  it('handles zero deposit balances and an exhausted daily limit', () => {
     renderDashboard({
       accounts: props.accounts!.map((account) =>
-        account.type === "credit" ? account : { ...account, balance: 0 },
+        account.type === 'credit' ? account : { ...account, balance: 0 },
       ),
       customer: { ...props.customer!, transferredToday: 5000 },
-    });
-    expect(
-      screen.getByRole("region", { name: "Total available" }),
-    ).toHaveTextContent(money(0));
-    expect(
-      screen.getByRole("complementary", { name: "Daily limit" }),
-    ).toHaveTextContent(money(0));
-  });
-
+    })
+    expect(screen.getByRole('region', { name: 'Total available' })).toHaveTextContent(money(0))
+    expect(screen.getByRole('complementary', { name: 'Daily limit' })).toHaveTextContent(money(0))
+  })
 })

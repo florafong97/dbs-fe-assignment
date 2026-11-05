@@ -24,16 +24,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(
-  path: string,
-  init?: RequestInit,
-): Promise<T> {
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${BASE_URL}${path.replace(/^\//, '')}`
   const response = await fetch(url, init)
-  const body = (await response.json().catch(() => null)) as
-    | T
-    | ApiErrorBody
-    | null
+  const body = (await response.json().catch(() => null)) as T | ApiErrorBody | null
 
   if (!response.ok) {
     throw new ApiError(response.status, body as ApiErrorBody | null)

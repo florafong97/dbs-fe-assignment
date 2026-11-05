@@ -5,7 +5,7 @@ import App from './App'
 import './index.css'
 
 async function enableMocking() {
-  const { worker } = await import('./mocks/browser')
+  const { worker } = await import('@/mocks/browser')
   await Promise.race([
     worker.start({
       onUnhandledRequest: 'bypass',
@@ -14,10 +14,7 @@ async function enableMocking() {
       },
     }),
     new Promise<never>((_, reject) => {
-      window.setTimeout(
-        () => reject(new Error('Timed out starting the mock worker')),
-        2500,
-      )
+      window.setTimeout(() => reject(new Error('Timed out starting the mock worker')), 2500)
     }),
   ])
 }
@@ -27,10 +24,7 @@ async function bootstrap() {
     await enableMocking()
   } catch (error) {
     // Render anyway so the error is visible instead of a blank page.
-    console.error(
-      'Mock API failed to start. Check that public/mockServiceWorker.js exists.',
-      error,
-    )
+    console.error('Mock API failed to start. Check that public/mockServiceWorker.js exists.', error)
   }
 
   const queryClient = new QueryClient({

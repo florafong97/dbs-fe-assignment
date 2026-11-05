@@ -1,4 +1,4 @@
-import Skeleton from "../../../components/Skeleton";
+import Skeleton from '@/components/Skeleton/Skeleton'
 
 export default function AccountCardSkeleton() {
   return (
@@ -17,5 +17,5 @@ export default function AccountCardSkeleton() {
         <Skeleton className="skeleton-short" />
       </p>
     </li>
-  );
+  )
 }

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+package-lock.json
+public/mockServiceWorker.js
+# Supplied mock implementation and data must remain unchanged.
+mock-api/
+src/mocks/
+brief/

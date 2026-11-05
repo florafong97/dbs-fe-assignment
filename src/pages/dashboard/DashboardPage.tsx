@@ -1,19 +1,19 @@
-import AccountCardSkeleton from "./components/AccountCardSkeleton";
-import TransactionList from "./components/TransactionList";
-import AccountCard from "./components/AccountCard";
-import BalanceHero from "./components/BalanceHero";
-import DailyLimitCard from "./components/DailyLimitCard";
-import type { Account, Customer, Transaction } from "../../api/types";
-import "./dashboard.css";
+import AccountCardSkeleton from './components/AccountCardSkeleton'
+import TransactionList from './components/TransactionList'
+import AccountCard from './components/AccountCard'
+import BalanceHero from './components/BalanceHero'
+import DailyLimitCard from './components/DailyLimitCard'
+import type { Account, Customer, Transaction } from '@/api/types'
+import './dashboard.css'
 
 interface DashboardPageProps {
-  accounts?: Account[];
-  customer?: Customer;
-  transactions?: Transaction[];
-  isPending: boolean;
-  isError: boolean;
-  isFetching: boolean;
-  onRetry: () => void;
+  accounts?: Account[]
+  customer?: Customer
+  transactions?: Transaction[]
+  isPending: boolean
+  isError: boolean
+  isFetching: boolean
+  onRetry: () => void
 }
 
 export default function DashboardPage({
@@ -25,15 +25,15 @@ export default function DashboardPage({
   isFetching,
   onRetry,
 }: DashboardPageProps) {
-  const isLoading = isPending && !isError;
-  const accounts = isLoading ? undefined : accountData;
-  const customer = isLoading ? undefined : customerData;
-  const transactions = isLoading ? undefined : transactionData;
+  const isLoading = isPending && !isError
+  const accounts = isLoading ? undefined : accountData
+  const customer = isLoading ? undefined : customerData
+  const transactions = isLoading ? undefined : transactionData
 
   return (
     <>
       <p className="visually-hidden" role="status">
-        {isLoading ? "Loading dashboard…" : isError ? "" : "Dashboard loaded."}
+        {isLoading ? 'Loading dashboard…' : isError ? '' : 'Dashboard loaded.'}
       </p>
       <main
         id="overview"
@@ -44,12 +44,7 @@ export default function DashboardPage({
         {isError ? (
           <div className="dashboard-feedback">
             <p role="alert">We couldn't load your dashboard.</p>
-            <button
-              className="retry-button"
-              type="button"
-              disabled={isFetching}
-              onClick={onRetry}
-            >
+            <button className="retry-button" type="button" disabled={isFetching} onClick={onRetry}>
               Retry
             </button>
           </div>
@@ -84,5 +79,5 @@ export default function DashboardPage({
         )}
       </main>
     </>
-  );
+  )
 }

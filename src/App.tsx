@@ -9,7 +9,9 @@ export default function App() {
 
   return (
     <>
-      <a className="skip-link" href="#overview">Skip to dashboard</a>
+      <a className="skip-link" href="#overview">
+        Skip to dashboard
+      </a>
       <Header
         theme={preferences.theme}
         segment={preferences.segment}

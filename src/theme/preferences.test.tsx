@@ -3,19 +3,21 @@ import { runInNewContext } from 'node:vm'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import Header from '../components/Header/Header'
-import type { Segment } from '../api/types'
+import Header from '@/components/Header/Header'
+import type { Segment } from '@/api/types'
 import { usePreferences } from './usePreferences'
 
 // Exercise the preference hook with controlled UI, as App does in production.
 function PreferenceControls({ defaultSegment }: { defaultSegment?: Segment }) {
   const preferences = usePreferences(defaultSegment)
-  return <Header
-    theme={preferences.theme}
-    segment={preferences.segment}
-    onToggleTheme={preferences.toggleTheme}
-    onSelectSegment={preferences.selectSegment}
-  />
+  return (
+    <Header
+      theme={preferences.theme}
+      segment={preferences.segment}
+      onToggleTheme={preferences.toggleTheme}
+      onSelectSegment={preferences.selectSegment}
+    />
+  )
 }
 
 const bootstrapSource = readFileSync('public/scripts/preferences.js', 'utf8')
@@ -53,7 +55,9 @@ describe('pre-paint preferences', () => {
   })
 
   it('falls back to the system theme when storage cannot be read', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Blocked') })
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Blocked')
+    })
     expect(() => bootstrap(true)).not.toThrow()
     expect(document.documentElement.dataset.theme).toBe('dark')
     expect(document.documentElement.dataset.segment).toBe('retail')
@@ -67,7 +71,10 @@ describe('header preference controls', () => {
     const view = render(<PreferenceControls />)
     const root = document.documentElement
     expect(screen.getByRole('button', { name: 'Retail' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('button', { name: 'Dark mode' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: 'Dark mode' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
     await user.click(screen.getByRole('button', { name: 'Premium' }))
     expect(root.dataset.segment).toBe('premium')
     expect(root.dataset.theme).toBe('light')
@@ -86,7 +93,10 @@ describe('header preference controls', () => {
     render(<PreferenceControls defaultSegment="premium" />)
     expect(root.dataset.theme).toBe('dark')
     expect(root.dataset.segment).toBe('retail')
-    expect(screen.getByRole('button', { name: 'Dark mode' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Dark mode' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
     expect(screen.getByRole('button', { name: 'Retail' })).toHaveAttribute('aria-pressed', 'true')
   })
 
@@ -111,8 +121,12 @@ describe('header preference controls', () => {
   })
 
   it('keeps controls usable when storage reads and writes fail', async () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Blocked') })
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('Quota') })
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Blocked')
+    })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Quota')
+    })
     const user = userEvent.setup()
     render(<PreferenceControls />)
     await user.click(screen.getByRole('button', { name: 'Dark mode' }))
