@@ -41,9 +41,3 @@ const longDate = new Intl.DateTimeFormat('en-SG', {
 export function formatLongDate(date: Date): string {
   return longDate.format(date)
 }
-
-/** Time-of-day greeting using the browser-local hour. */
-export function formatGreeting(date: Date): string {
-  const hour = date.getHours()
-  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
-}

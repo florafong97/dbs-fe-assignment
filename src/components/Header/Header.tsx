@@ -1,6 +1,6 @@
 import { Moon, Sun } from 'lucide-react'
 import type { Segment } from '@/api/types'
-import { formatGreeting, formatLongDate } from '@/lib/format'
+import { formatLongDate } from '@/lib/format'
 import './Header.css'
 
 interface HeaderProps {
@@ -89,7 +89,7 @@ export default function Header({
 
         <div className="header-intro">
           <h1 className="header-greeting">
-            {formatGreeting(now)}
+            {'Good Evening'}
             {name ? `, ${name}` : ''}
           </h1>
           <time className="header-date" dateTime={now.toISOString()}>
