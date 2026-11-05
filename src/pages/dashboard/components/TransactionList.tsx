@@ -1,12 +1,11 @@
 import Skeleton from '@/components/Skeleton/Skeleton'
-import { Search, X } from 'lucide-react'
+import SearchInput from '@/components/SearchInput/SearchInput'
 import { useState } from 'react'
 import type { Transaction } from '@/api/types'
 import { formatMoney, formatShortDate } from '@/lib/format'
 
 export default function TransactionList({ transactions }: { transactions?: Transaction[] }) {
   const [search, setSearch] = useState('')
-  const [isPointerFocus, setIsPointerFocus] = useState(false)
   const query = search.trim().toLowerCase()
   // Search only the eight loaded rows: immediate results without extra requests.
   const matches = transactions?.filter(
@@ -19,26 +18,13 @@ export default function TransactionList({ transactions }: { transactions?: Trans
     <section className="transactions-section" aria-labelledby="transactions-heading">
       <div className="transactions-header">
         <h2 id="transactions-heading">Recent transactions</h2>
-        <div className="transaction-search">
-          <Search size={18} aria-hidden="true" />
-          <input
-            id="transaction-search"
-            type="search"
-            disabled={transactions === undefined}
-            data-pointer-focus={isPointerFocus}
-            onPointerDown={() => setIsPointerFocus(true)}
-            onBlur={() => setIsPointerFocus(false)}
-            aria-label="Search transactions"
-            placeholder="Search transactions"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          {search && (
-            <button type="button" aria-label="Clear search" onClick={() => setSearch('')}>
-              <X size={18} aria-hidden="true" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          id="transaction-search"
+          label="Search transactions"
+          value={search}
+          onValueChange={setSearch}
+          disabled={transactions === undefined}
+        />
       </div>
       <div className="dashboard-panel transactions-card">
         {matches === undefined ? (

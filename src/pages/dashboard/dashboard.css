@@ -181,61 +181,6 @@
   min-width: 0;
 }
 
-.transaction-search {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-width: 0;
-  padding-inline: var(--space-3);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  background: var(--surface);
-}
-
-.transaction-search > svg {
-  flex-shrink: 0;
-}
-
-.transaction-search input {
-  width: 100%;
-  min-width: 0;
-  min-height: var(--tap-target);
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  font-size: var(--text-sm);
-}
-
-.transaction-search input::placeholder {
-  color: var(--text-muted);
-}
-
-.transaction-search input:focus {
-  outline: none;
-}
-
-.transaction-search input:focus-visible:not([data-pointer-focus='true']) {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.transaction-search input::-webkit-search-cancel-button {
-  appearance: none;
-}
-
-.transaction-search button {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: var(--tap-target);
-  height: var(--tap-target);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--text-muted);
-}
-
 .transaction-count {
   margin: var(--space-4) 0;
   color: var(--text-muted);
@@ -324,7 +269,7 @@
     flex-wrap: wrap;
   }
 
-  .transaction-search {
+  .transactions-header .search-input-field {
     flex: 0 1 280px;
   }
 }

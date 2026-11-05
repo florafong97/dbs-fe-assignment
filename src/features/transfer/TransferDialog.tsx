@@ -1,3 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
+import RecipientStep from './components/RecipientStep'
+import { payeesQueryOptions } from './queries'
 import { useEffect, useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import type { FieldPath } from 'react-hook-form'
@@ -46,10 +49,13 @@ interface TransferDialogProps {
 export default function TransferDialog({ accounts, customer, onClose }: TransferDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [step, setStep] = useState<TransferStep>('recipient')
+  const payees = useQuery(payeesQueryOptions)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const previousStep = useRef(step)
   const remainingDailyLimit = customer.dailyTransferLimit - customer.transferredToday
   const form = useForm<TransferFormValues>({
     resolver: zodResolver(createTransferSchema(accounts, remainingDailyLimit)),
-    mode: 'onBlur',
+    mode: 'onTouched',
     shouldUnregister: false,
     defaultValues: {
       recipientMode: 'saved',
@@ -73,9 +79,14 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
     }
   }, [fromAccountId, accounts, remainingDailyLimit, getValues, getFieldState, trigger])
 
+  useEffect(() => {
+    if (previousStep.current !== step) headingRef.current?.focus()
+    previousStep.current = step
+  }, [step])
+
   async function continueToNextStep() {
     if (step === 'review') return
-    if (await trigger(currentStep.fields, { shouldFocus: true })) {
+    if (await trigger(currentStep.fields, { shouldFocus: true, shouldTouch: true })) {
       setStep(step === 'recipient' ? 'amount' : 'review')
     }
   }
@@ -143,7 +154,19 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
           </ol>
         </header>
         <div className="transfer-dialog-content">
-          <h3>{currentStep.title}</h3>
+          <h3 ref={headingRef} tabIndex={-1}>
+            {currentStep.title}
+          </h3>
+          {step === 'recipient' && (
+            <RecipientStep
+              form={form}
+              payees={payees.data?.payees}
+              isPending={payees.isPending}
+              isError={payees.isError}
+              isFetching={payees.isFetching}
+              onRetry={() => void payees.refetch()}
+            />
+          )}
         </div>
         <footer className="transfer-dialog-footer">
           <button
@@ -153,8 +176,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
           >
             {step === 'recipient' ? 'Cancel' : 'Back'}
           </button>
-          {/* Enabled when the step inputs are added in the next increments. */}
-          <button className="transfer-primary" type="submit" disabled>
+          <button className="transfer-primary" type="submit" disabled={step !== 'recipient'}>
             Continue
           </button>
         </footer>
