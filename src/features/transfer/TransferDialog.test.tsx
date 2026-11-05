@@ -80,6 +80,25 @@ describe('transfer dialog dismissal', () => {
 })
 
 describe('transfer recipient step', () => {
+  it('scrolls the new-recipient form into view when opened, without scrolling on typing', async () => {
+    const user = userEvent.setup()
+    const scroll = vi.spyOn(Element.prototype, 'scrollIntoView').mockClear()
+    renderTransfer()
+    const toggle = screen.getByRole('button', { name: 'Send to someone new' })
+    await user.click(toggle)
+    const name = screen.getByLabelText('Recipient name')
+    expect(scroll).toHaveBeenCalledTimes(1)
+    expect(scroll.mock.contexts[0]).toContainElement(name)
+    expect(scroll).toHaveBeenLastCalledWith({ behavior: 'instant', block: 'start' })
+    await user.type(name, 'Alex Lim')
+    expect(scroll).toHaveBeenCalledTimes(1)
+    await user.click(toggle)
+    expect(screen.queryByLabelText('Recipient name')).not.toBeInTheDocument()
+    await user.click(toggle)
+    expect(screen.getByLabelText('Recipient name')).toHaveValue('Alex Lim')
+    expect(scroll).toHaveBeenCalledTimes(2)
+  })
+
   it('loads all four masked payees, supports keyboard selection and advances without sending money', async () => {
     const user = userEvent.setup()
     let posts = 0

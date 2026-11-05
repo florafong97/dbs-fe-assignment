@@ -1,6 +1,6 @@
 import FormField from '@/components/FormField/FormField'
 import SearchInput from '@/components/SearchInput/SearchInput'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
@@ -27,6 +27,7 @@ export default function RecipientStep({
   onRetry,
 }: RecipientStepProps) {
   const [search, setSearch] = useState('')
+  const newRecipientRef = useRef<HTMLDivElement>(null)
   const mode = useWatch({ control: form.control, name: 'recipientMode' })
   const selectedPayee = useWatch({ control: form.control, name: 'payeeId' })
   const query = search.trim().toLowerCase()
@@ -35,6 +36,12 @@ export default function RecipientStep({
   )
   const { errors } = form.formState
   const banks = [...new Set(payees?.map((payee) => payee.bank) ?? [])]
+
+  useEffect(() => {
+    if (mode === 'new') {
+      newRecipientRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
+    }
+  }, [mode])
 
   function toggleNewRecipient() {
     form.setValue('recipientMode', mode === 'new' ? 'saved' : 'new', { shouldDirty: true })
@@ -134,7 +141,7 @@ export default function RecipientStep({
         <ChevronDown size={18} aria-hidden="true" />
       </button>
       {mode === 'new' && (
-        <div id="new-recipient-fields" className="new-recipient-fields">
+        <div ref={newRecipientRef} id="new-recipient-fields" className="new-recipient-fields">
           {(
             [
               ['name', 'Recipient name'],

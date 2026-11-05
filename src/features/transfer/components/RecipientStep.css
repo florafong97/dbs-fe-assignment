@@ -8,6 +8,14 @@
   margin-top: var(--space-6);
 }
 
+.new-recipient-fields {
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  scroll-margin-block: var(--space-4);
+}
+
 .payee-options legend {
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
