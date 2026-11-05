@@ -1,9 +1,12 @@
+import { useState } from 'react'
+import TransferDialog from '@/features/transfer/TransferDialog'
 import Header from './components/Header/Header'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import { useDashboardQueries } from './pages/dashboard/queries'
 import { usePreferences } from './theme/usePreferences'
 
 export default function App() {
+  const [isTransferOpen, setIsTransferOpen] = useState(false)
   const dashboard = useDashboardQueries()
   const preferences = usePreferences(dashboard.customer.data?.customer.segment)
 
@@ -26,7 +29,9 @@ export default function App() {
         isError={dashboard.isError}
         isFetching={dashboard.isFetching}
         onRetry={() => void dashboard.retry()}
+        onNewTransfer={() => setIsTransferOpen(true)}
       />
+      {isTransferOpen && <TransferDialog onClose={() => setIsTransferOpen(false)} />}
     </>
   )
 }

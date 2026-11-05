@@ -15,6 +15,7 @@ const props: ComponentProps<typeof DashboardPage> = {
   isError: false,
   isFetching: false,
   onRetry: () => {},
+  onNewTransfer: () => {},
 }
 
 function renderDashboard(overrides: Partial<ComponentProps<typeof DashboardPage>> = {}) {
@@ -39,10 +40,12 @@ describe('DashboardPage', () => {
     const view = render(<DashboardPage {...props} isPending />)
     expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'true')
     expect(screen.getByRole('searchbox')).toBeDisabled()
+    expect(screen.queryByRole('button', { name: 'New transfer' })).not.toBeInTheDocument()
     expect(screen.queryByText('Everyday Checking')).not.toBeInTheDocument()
     view.rerender(<DashboardPage {...props} />)
     expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'false')
     expect(screen.getByText('Everyday Checking')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'New transfer' })).toBeEnabled()
   })
 
   it('gives errors priority over loading and invokes the supplied retry callback', async () => {
@@ -50,6 +53,7 @@ describe('DashboardPage', () => {
     const user = userEvent.setup()
     const view = render(<DashboardPage {...props} isPending isError onRetry={onRetry} />)
     expect(screen.getByRole('alert')).toHaveTextContent("We couldn't load your dashboard.")
+    expect(screen.queryByRole('button', { name: 'New transfer' })).not.toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Total available' })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Retry' }))
     expect(onRetry).toHaveBeenCalledTimes(1)
@@ -57,6 +61,17 @@ describe('DashboardPage', () => {
     expect(screen.getByRole('button', { name: 'Retry' })).toBeDisabled()
     await user.click(screen.getByRole('button', { name: 'Retry' }))
     expect(onRetry).toHaveBeenCalledTimes(1)
+  })
+
+  it('delegates transfer opening and keeps the CTA available during background refreshes', async () => {
+    const user = userEvent.setup()
+    const onNewTransfer = vi.fn()
+    renderDashboard({ onNewTransfer, isFetching: true })
+    const button = screen.getByRole('button', { name: 'New transfer' })
+    expect(button).toBeEnabled()
+    expect(button).toHaveAttribute('aria-haspopup', 'dialog')
+    await user.click(button)
+    expect(onNewTransfer).toHaveBeenCalledTimes(1)
   })
 
   it('distinguishes empty supplied lists from loading', () => {

@@ -13,6 +13,7 @@ interface DashboardPageProps {
   isPending: boolean
   isError: boolean
   isFetching: boolean
+  onNewTransfer: () => void
   onRetry: () => void
 }
 
@@ -24,6 +25,7 @@ export default function DashboardPage({
   isError,
   isFetching,
   onRetry,
+  onNewTransfer,
 }: DashboardPageProps) {
   const isLoading = isPending && !isError
   const accounts = isLoading ? undefined : accountData
@@ -51,7 +53,11 @@ export default function DashboardPage({
         ) : (
           <>
             <div className="dashboard-main">
-              <BalanceHero accounts={accounts} />
+              <BalanceHero
+                accounts={accounts}
+                isLoading={isLoading}
+                onNewTransfer={onNewTransfer}
+              />
               <section className="accounts-section" aria-labelledby="accounts-heading">
                 <h2 id="accounts-heading">Accounts</h2>
                 {accounts ? (
