@@ -2,6 +2,8 @@ import { apiFetch } from './client'
 import type {
   AccountsResponse,
   CustomerResponse,
+  CreateTransferRequest,
+  TransferResponse,
   PayeesResponse,
   TransactionsResponse,
 } from './types'
@@ -21,4 +23,12 @@ export function getTransactions({ limit }: { limit: number }, signal?: AbortSign
 
 export function getPayees(signal?: AbortSignal) {
   return apiFetch<PayeesResponse>('/api/payees', { signal })
+}
+
+export function createTransfer(payload: CreateTransferRequest) {
+  return apiFetch<TransferResponse>('/api/transfers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
 }

@@ -1,41 +1,16 @@
+import { setupDialogMock } from '@/test/dialog'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Account, Customer } from '@/api/types'
 import { server } from '@/test/setup'
 import { formatMoney } from '@/lib/format'
 import seed from '../../../mock-api/db.json'
 import TransferDialog from './TransferDialog'
 
-// jsdom lacks native modal behaviour. These shims only expose open/close;
-// browser focus containment and responsive layout still require browser checks.
-const originalShowModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal')
-const originalClose = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'close')
-beforeAll(() => {
-  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-    configurable: true,
-    value(this: HTMLDialogElement) {
-      this.setAttribute('open', '')
-    },
-  })
-  Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-    configurable: true,
-    value(this: HTMLDialogElement) {
-      this.removeAttribute('open')
-    },
-  })
-})
-afterAll(() => {
-  for (const [name, descriptor] of [
-    ['showModal', originalShowModal],
-    ['close', originalClose],
-  ] as const) {
-    if (descriptor) Object.defineProperty(HTMLDialogElement.prototype, name, descriptor)
-    else Reflect.deleteProperty(HTMLDialogElement.prototype, name)
-  }
-})
+setupDialogMock()
 
 const clients: QueryClient[] = []
 afterEach(() => {
@@ -48,7 +23,7 @@ function renderTransfer() {
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   })
   clients.push(client)
-  return render(
+  const view = render(
     <QueryClientProvider client={client}>
       <TransferDialog
         accounts={seed.accounts as Account[]}
@@ -57,6 +32,7 @@ function renderTransfer() {
       />
     </QueryClientProvider>,
   )
+  return { ...view, client }
 }
 
 async function payeesLoaded() {
@@ -68,6 +44,16 @@ async function enterNewRecipient(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText('Recipient name'), 'Alex Lim')
   await user.type(screen.getByLabelText('Account number (8 digits)'), '00123456')
   await user.type(screen.getByLabelText('Bank'), 'OCBC')
+}
+
+async function reviewSavedTransfer(user: ReturnType<typeof userEvent.setup>) {
+  await payeesLoaded()
+  await user.click(screen.getByRole('radio', { name: /Jamie Tan/ }))
+  await user.click(screen.getByRole('button', { name: 'Continue' }))
+  await user.type(screen.getByRole('textbox', { name: 'Amount' }), '120')
+  await user.type(screen.getByRole('textbox', { name: 'Note (optional)' }), 'Dinner')
+  await user.click(screen.getByRole('button', { name: 'Continue' }))
+  await screen.findByRole('heading', { name: 'Check the details' })
 }
 
 describe('transfer recipient step', () => {
@@ -136,7 +122,7 @@ describe('transfer recipient step', () => {
     )
     await user.click(screen.getByRole('button', { name: 'Continue' }))
     expect(await screen.findByRole('heading', { name: 'Check the details' })).toHaveFocus()
-    expect(screen.getByRole('button', { name: 'Confirm transfer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Confirm transfer' })).toBeEnabled()
     await user.click(screen.getByRole('button', { name: 'Back' }))
     expect(screen.getByRole('combobox', { name: 'From account' })).toHaveValue('acc_savings')
     expect(screen.getByRole('textbox', { name: 'Amount' })).toHaveValue('5000.00')
@@ -163,7 +149,7 @@ describe('transfer recipient step', () => {
     expect(review).toHaveTextContent(formatMoney(120).replace(/\u00a0/g, ' '))
     expect(review).toHaveTextContent('Dinner')
     expect(within(review).queryByText('Jamie Tan')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Confirm transfer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Confirm transfer' })).toBeEnabled()
     expect(posts).toBe(0)
   })
 
@@ -306,5 +292,115 @@ describe('transfer recipient step', () => {
     await payeesLoaded()
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
     expect(screen.getAllByRole('radio')).toHaveLength(4)
+  })
+})
+
+describe('transfer submission', () => {
+  it('retains a failed draft and sends only an explicit retry', async () => {
+    const user = userEvent.setup()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    server.use(
+      http.post(
+        '*/api/transfers',
+        () =>
+          HttpResponse.json(
+            { error: { code: 'INTERNAL_ERROR', message: 'Temporarily unavailable.' } },
+            { status: 500 },
+          ),
+        { once: true },
+      ),
+    )
+    renderTransfer()
+    await reviewSavedTransfer(user)
+    await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Temporarily unavailable.')
+    expect(screen.queryByRole('heading', { name: 'Transfer sent' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Check the details' })).toBeInTheDocument()
+    expect(fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1)
+    await user.click(screen.getByRole('button', { name: 'Back' }))
+    expect(screen.getByRole('textbox', { name: 'Amount' })).toHaveValue('120.00')
+    expect(screen.getByRole('textbox', { name: 'Note (optional)' })).toHaveValue('Dinner')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
+    await screen.findByRole('heading', { name: 'Transfer sent' }, { timeout: 3000 })
+    expect(fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(2)
+  })
+
+  it('maps API field errors to editable inputs without leaving review on failure', async () => {
+    const user = userEvent.setup()
+    const message = `Amount can't be more than your available balance (${formatMoney(80)}).`
+    server.use(
+      http.post('*/api/transfers', () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 'INSUFFICIENT_FUNDS',
+              message: 'Amount exceeds available balance.',
+              fields: { amount: message },
+              meta: { available: 80 },
+            },
+          },
+          { status: 422 },
+        ),
+      ),
+    )
+    renderTransfer()
+    await reviewSavedTransfer(user)
+    await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Amount exceeds available balance.')
+    expect(screen.getByRole('heading', { name: 'Check the details' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Back' }))
+    const amount = screen.getByRole('textbox', { name: 'Amount' })
+    expect(amount).toHaveAttribute('aria-invalid', 'true')
+    expect(amount).toHaveAccessibleDescription(new RegExp('Amount can'))
+    expect(screen.getByText(message.replace(/\u00a0/g, ' '))).toBeInTheDocument()
+  })
+
+  it('revalidates the whole draft if balances change on review and sends no request', async () => {
+    const user = userEvent.setup()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const view = renderTransfer()
+    await reviewSavedTransfer(user)
+    view.rerender(
+      <QueryClientProvider client={view.client}>
+        <TransferDialog
+          accounts={
+            seed.accounts.map((account) =>
+              account.id === 'acc_checking' ? { ...account, balance: 100 } : account,
+            ) as Account[]
+          }
+          customer={seed.customer as Customer}
+          onClose={vi.fn()}
+        />
+      </QueryClientProvider>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
+    expect(await screen.findByRole('heading', { name: 'How much?' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Amount' })).toHaveFocus()
+    expect(fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(0)
+  })
+
+  it('sends only new-recipient details when an inactive saved selection remains', async () => {
+    const user = userEvent.setup()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    renderTransfer()
+    await payeesLoaded()
+    await user.click(screen.getByRole('radio', { name: /Jamie Tan/ }))
+    await enterNewRecipient(user)
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    await user.type(screen.getByRole('textbox', { name: 'Amount' }), '25.50')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
+    await screen.findByRole('heading', { name: 'Transfer sent' }, { timeout: 3000 })
+    const posts = fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')
+    expect(posts).toHaveLength(1)
+    expect(JSON.parse(String(posts[0][1]?.body))).toEqual({
+      fromAccountId: 'acc_checking',
+      amount: 25.5,
+      recipient: { name: 'Alex Lim', accountNumber: '00123456', bank: 'OCBC' },
+    })
+    expect(screen.getByRole('region', { name: 'Transfer confirmation' })).toHaveTextContent(
+      'Alex Lim',
+    )
   })
 })
