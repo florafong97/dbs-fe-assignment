@@ -16,6 +16,8 @@ export default function App() {
         Skip to dashboard
       </a>
       <Header
+        firstName={dashboard.customer.data?.customer.firstName}
+        lastName={dashboard.customer.data?.customer.lastName}
         theme={preferences.theme}
         segment={preferences.segment}
         onToggleTheme={preferences.toggleTheme}

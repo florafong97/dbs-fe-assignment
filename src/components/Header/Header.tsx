@@ -1,15 +1,32 @@
+import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import type { Segment } from '@/api/types'
 import './Header.css'
 
 interface HeaderProps {
+  firstName?: string
+  lastName?: string
   theme: 'light' | 'dark'
   segment: Segment
   onToggleTheme: () => void
   onSelectSegment: (segment: Segment) => void
 }
 
-export default function Header({ theme, segment, onToggleTheme, onSelectSegment }: HeaderProps) {
+export default function Header({
+  firstName,
+  lastName,
+  theme,
+  segment,
+  onToggleTheme,
+  onSelectSegment,
+}: HeaderProps) {
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const name = firstName?.trim()
+  const nameParts = [name, lastName?.trim()].filter((part): part is string => Boolean(part))
+  const fullName = nameParts.join(' ')
+  const initials = nameParts.map((part) => Array.from(part)[0].toUpperCase()).join('')
+
   return (
     <header className="app-header">
       <div className="app-container header-layout">
@@ -66,12 +83,15 @@ export default function Header({ theme, segment, onToggleTheme, onSelectSegment 
               <Moon size={20} strokeWidth={1.5} aria-hidden="true" />
             )}
           </button>
-          <span className="avatar" aria-label="Ava Chen">
-            AC
+          <span className="avatar" aria-label={fullName || 'Customer'}>
+            {initials || '-'}
           </span>
         </div>
 
-        <h1 className="header-greeting">Good evening, Ava</h1>
+        <h1 className="header-greeting">
+          {greeting}
+          {name ? `, ${name}` : ''}
+        </h1>
       </div>
     </header>
   )

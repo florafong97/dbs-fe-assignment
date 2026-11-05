@@ -49,6 +49,22 @@ async function reviewTransfer(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('App dashboard integration', () => {
+  it('propagates API customer names to the greeting and avatar', async () => {
+    server.use(
+      http.get('*/api/customer', () =>
+        HttpResponse.json({
+          customer: { ...seed.customer, firstName: 'Morgan', lastName: 'Lee' },
+        }),
+      ),
+    )
+    renderApp()
+    await loaded()
+    expect(
+      screen.getByRole('heading', { name: /Good (morning|afternoon|evening), Morgan/ }),
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Morgan Lee')).toHaveTextContent('ML')
+  })
+
   it("supplies the customer's default segment to Header from the shared customer request", async () => {
     server.use(
       http.get('*/api/customer', () =>

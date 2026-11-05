@@ -20,7 +20,7 @@ Before implementing each feature, present a concise proposal covering:
 
 ## Overview and scope
 
-- Build Meridian Banking's signed-in, single-page experience for Ava Chen: accounts/transactions dashboard, three-step transfer dialog, light/dark themes and Retail (blue)/Premium (crimson) branding.
+- Build Meridian Banking's signed-in, single-page experience for the API-provided customer: accounts/transactions dashboard, three-step transfer dialog, light/dark themes and Retail (blue)/Premium (crimson) branding.
 - Required: all specification §3 features/states, responsive layout, validation, at least three behaviour tests, deployment and submission README. Replace the starter placeholder; use supplied API data, not invented data. No real backend, login or routing.
 - Out of scope: Cards/Payments/Insights pages (show disabled header links), charts, notifications, payee management, transaction details, other currencies and translations.
 - Optional only: daily-limit progress bar, discard confirmation, debug menu, balance hiding, third segment, `#transfer` deep link, E2E test, CI, date line and another-transfer action. Suggested component names are not prescribed.
@@ -43,7 +43,7 @@ Before implementing each feature, present a concise proposal covering:
 ### Dashboard — spec §3.1, API contract
 
 - Fetch customer, accounts and transactions (`limit=8`) concurrently; render stable skeletons. Handle loading, empty and error states with retry.
-- Header: Meridian logo, exact `Good evening, Ava`, segment switch, theme toggle and `AC` avatar; no time-dependent greeting.
+- Header: Meridian logo, segment/theme controls, API-derived customer name and avatar initials. User override of brief D2: use browser-local time for morning (<12), afternoon (12–17), evening (18+); calculate once when the header mounts; refresh the time-based greeting on reload, with no timer or focus listener. Show no name before data loads; never hardcode customer identity.
 - Derive total from deposit accounts only (initially SGD 17,120.55); caption `Across 2 deposit accounts`. Show all three account names, masked numbers and balances; credit is negative with `Amount due`.
 - Show eight newest transactions, descending by date, with description/category/date/amount and pending chip. Incoming amounts have `+` and positive colour; outgoing amounts use `-` and normal text colour.
 - Search description OR category, case-insensitively; display match count and clear action. Local filtering of loaded rows or API `q` is allowed; explain choice. Use exact no-match and dashboard-error copy (§4).
