@@ -1,0 +1,21 @@
+.skeleton {
+  display: inline-block;
+  width: 80%;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--skeleton);
+  vertical-align: bottom;
+  animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes skeleton-pulse {
+  to {
+    background: var(--skeleton-highlight);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

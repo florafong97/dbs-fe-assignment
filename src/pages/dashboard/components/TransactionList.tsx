@@ -1,3 +1,4 @@
+import Skeleton from "../../../components/Skeleton";
 import { Search, X } from "lucide-react";
 import { useState } from "react";
 import type { Transaction } from "../../../api/types";
@@ -30,6 +31,7 @@ export default function TransactionList({
           <input
             id="transaction-search"
             type="search"
+            disabled={transactions === undefined}
             data-pointer-focus={isPointerFocus}
             onPointerDown={() => setIsPointerFocus(true)}
             onBlur={() => setIsPointerFocus(false)}
@@ -51,15 +53,30 @@ export default function TransactionList({
       </div>
       <div className="dashboard-panel transactions-card">
         {matches === undefined ? (
-          <p className="dashboard-caption" role="status">
-            Loading transactions…
-          </p>
+          <ul className="transaction-list" aria-hidden="true">
+            {Array.from({ length: 8 }, (_, index) => (
+              <li className="transaction-row" key={index}>
+                <div className="transaction-details">
+                  <p className="transaction-description">
+                    <Skeleton />
+                  </p>
+                  <p className="transaction-meta">
+                    <Skeleton className="skeleton-short" />
+                  </p>
+                </div>
+                <div className="transaction-value">
+                  <p className="transaction-amount">
+                    <Skeleton className="skeleton-money" />
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
         ) : (
           <>
             {query && (
               <p className="transaction-count" role="status">
-                `${matches.length} $
-                {matches.length === 1 ? "result" : "results"} match your search`
+                {`${matches.length} ${matches.length === 1 ? "result" : "results"} match your search`}
               </p>
             )}
             {matches.length > 0 ? (
