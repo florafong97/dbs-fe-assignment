@@ -1,4 +1,5 @@
 import SuccessPanel from './components/SuccessPanel'
+import TransferStepper from './components/TransferStepper'
 import { ApiError } from '@/api/client'
 import { toTransferPayload } from './payload'
 import ReviewStep from './components/ReviewStep'
@@ -200,18 +201,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
               <X size={20} aria-hidden="true" />
             </button>
           </div>
-          {!transfer.isSuccess && (
-            <ol className="transfer-stepper" aria-label="Transfer progress">
-              {steps.map((item, index) => (
-                <li key={item.id} aria-current={step === item.id ? 'step' : undefined}>
-                  <span className="transfer-step-number" aria-hidden="true">
-                    {index + 1}
-                  </span>
-                  {item.label}
-                </li>
-              ))}
-            </ol>
-          )}
+          {!transfer.isSuccess && <TransferStepper steps={steps} activeStep={step} />}
         </header>
         <div className="transfer-dialog-content">
           {transfer.isSuccess && transfer.data ? (

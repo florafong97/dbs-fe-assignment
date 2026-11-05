@@ -116,9 +116,6 @@ export default function RecipientStep({
             matches?.length === 0 && (
               <div>
                 <p>No recipients match your search.</p>
-                <button className="transfer-secondary" type="button" onClick={() => setSearch('')}>
-                  Clear search
-                </button>
               </div>
             )
           )}

@@ -1,0 +1,49 @@
+.transfer-stepper {
+  display: flex;
+  gap: var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.transfer-stepper li {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.transfer-stepper li:last-child {
+  flex: 0 0 auto;
+}
+
+.transfer-stepper li:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  min-width: var(--space-2);
+  border-top: 1px solid var(--border-strong);
+}
+
+.transfer-stepper [aria-current='step'] {
+  color: var(--brand);
+  font-weight: var(--weight-semibold);
+}
+
+.transfer-step-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  color: var(--text-muted);
+}
+
+.transfer-stepper [aria-current='step'] .transfer-step-number {
+  background: var(--brand);
+  color: var(--on-brand);
+}
