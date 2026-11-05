@@ -56,7 +56,6 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
     const dialog = dialogRef.current
     if (!dialog) return
 
-    const trigger = document.activeElement
     const previousOverflow = document.body.style.overflow
     dialog.showModal()
     dialog.querySelector<HTMLButtonElement>('.transfer-close')?.focus()
@@ -65,7 +64,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
     return () => {
       dialog.close()
       document.body.style.overflow = previousOverflow
-      if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus()
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     }
   }, [])
 

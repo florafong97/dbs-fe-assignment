@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DebugPanel from '@/components/DebugPanel/DebugPanel'
 import TransferDialog from '@/features/transfer/TransferDialog'
 import Header from './components/Header/Header'
 import DashboardPage from './pages/dashboard/DashboardPage'
@@ -15,6 +16,7 @@ export default function App() {
       <a className="skip-link" href="#overview">
         Skip to dashboard
       </a>
+      <DebugPanel className="app-container" />
       <Header
         firstName={dashboard.customer.data?.customer.firstName}
         lastName={dashboard.customer.data?.customer.lastName}

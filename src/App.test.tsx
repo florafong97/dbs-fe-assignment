@@ -261,7 +261,7 @@ describe('App transfer integration', () => {
   beforeEach(() => vi.setSystemTime(new Date('2026-10-20T10:15:00Z')))
   afterEach(() => vi.useRealTimers())
 
-  it('synchronizes native dismissal, restores focus and scroll, and reopens in Strict Mode', async () => {
+  it('synchronizes native dismissal, clears focus, restores scroll and reopens in Strict Mode', async () => {
     const user = userEvent.setup()
     renderApp(true)
     const trigger = await screen.findByRole('button', { name: 'New transfer' })
@@ -273,14 +273,14 @@ describe('App transfer integration', () => {
     await act(async () => dialog.close())
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(document.body.style.overflow).toBe(previousOverflow)
-    expect(trigger).toHaveFocus()
+    expect(trigger).not.toHaveFocus()
 
     await user.click(trigger)
     expect(screen.getByRole('dialog')).toHaveAttribute('open')
     expect(screen.getByRole('heading', { name: 'Who are you sending to?' })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Close transfer' }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(trigger).toHaveFocus()
+    expect(trigger).not.toHaveFocus()
     expect(document.body.style.overflow).toBe(previousOverflow)
   })
 

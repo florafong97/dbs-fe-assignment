@@ -51,7 +51,7 @@ Before implementing each feature, present a concise proposal covering:
 
 ### Transfer — spec §3.2–3.3, API contract
 
-- `New transfer` opens desktop centred dialog (≥1024px), mobile full-screen sheet, with Recipient → Amount → Review stepper. Move focus inside; Esc/close dismiss; restore trigger focus.
+- `New transfer` opens desktop centred dialog (≥1024px), mobile full-screen sheet, with Recipient → Amount → Review stepper. Move focus inside; Esc/close dismiss. User override: clear focus on dismissal instead of restoring trigger focus.
 - Recipient: searchable API payees (all four, keyboard operable), or `Send to someone new` disclosure for name/account/bank.
 - Amount: checking/savings only, amount input, presets 50/100/250/500, available balance, remaining daily limit, optional note with 50-character counter.
 - Review: from-account, recipient name/masked number/bank, amount, zero fee, total and note. Back retains entries. Send only on `Confirm transfer`.

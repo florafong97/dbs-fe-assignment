@@ -43,23 +43,17 @@
 
 ## Loading, empty and error states
 
-| State                    | Behavior / how to see it                                                                                                                                                                                   |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Initial loading          | Reload the app. Supplied responses take about 500ms; balances, accounts, daily limit and transactions use skeletons.                                                                                       |
-| Search loading           | Type a new transaction search. Loading stays within the transaction section and its input remains usable.                                                                                                  |
-| No transaction matches   | Search for `no-such-transaction`; the prescribed message and Clear search action appear.                                                                                                                   |
-| No payee matches         | Open New transfer and search for `no-such-payee`; clear the search or choose Send to someone new.                                                                                                          |
-| Validation               | Continue without a recipient, enter more than the selected account balance, or select savings and exceed the remaining daily limit. Errors are linked to inputs; Continue focuses the first invalid field. |
-| Transfer failure         | Put `#fail` in the optional note and confirm an otherwise valid transfer. The supplied API rejects it without moving money; review data remains available for retry/correction.                            |
-| Successful transfer      | Complete a valid transfer. The success panel shows the API reference and the dashboard refreshes before returning.                                                                                         |
-| Request/refresh failures | Dashboard, transactions and payees have Retry at their owning scope. A completed transfer has a separate Retry dashboard refresh action if its follow-up GETs fail.                                        |
+Open [API debug tools](https://florafong-dbs-fe.vercel.app/?debug=1) (add `?debug=1` param) and expand
+the panel above the header. It is hidden during normal visits and appears only
+on the dashboard. Controls update the URL and refetch affected active queries;
+inactive queries use the setting when next opened.
 
-The supplied GET hooks are `?scenario=error`, `?scenario=empty` on list requests
-and `?delay=1500`. They belong on **API request URLs**, not the page URL. See the
-[API contract](brief/api-contract.md#test-and-demo-hooks).
+Test transfer submission error with `#fail` in the notes.
 
-**TODO:** Add a reproducible deployed walkthrough for GET loading, empty and
-error states. There is no permanent debug control in the main UI.
+Error overrides persist, so Retry continues to fail until the setting is
+restored. Reset overrides clears all response/delay overrides and refetches GETs
+without reloading or resetting completed transfers. It keeps `debug=1` so the
+panel remains accessible. Remove `debug=1` to return to the normal UI.
 
 ## Tests
 
@@ -71,7 +65,7 @@ npm run build         # production output in dist/
 npm run format:check  # Prettier check
 ```
 
-The latest local `npm run check` passes all **114 tests**. The tests prioritize
+The latest local `npm run check` passes all **115 tests**. The tests prioritize
 user behavior and financial/state boundaries:
 
 - **App:** concurrent requests, shared customer data, independent API failures,

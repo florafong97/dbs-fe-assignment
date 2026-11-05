@@ -1,0 +1,51 @@
+.debug-panel {
+  flex-shrink: 0;
+  max-height: 35dvh;
+  margin: var(--space-4);
+  padding: var(--space-3);
+  overflow-y: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-sm);
+}
+
+.debug-panel.app-container {
+  margin-inline: auto;
+}
+
+.debug-panel > summary {
+  min-height: var(--tap-target);
+  padding-block: var(--space-3);
+  cursor: pointer;
+  font-weight: var(--weight-semibold);
+}
+
+.debug-panel-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.debug-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.debug-panel-status,
+.debug-panel-note {
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.debug-panel-note {
+  margin-bottom: 0;
+  font-size: var(--text-xs);
+}
