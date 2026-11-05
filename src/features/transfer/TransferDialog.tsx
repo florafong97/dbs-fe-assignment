@@ -28,6 +28,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
     invalidField,
     remainingDailyLimit,
     transfer,
+    sendErrorMessage,
     refresh,
     canClose,
     canDismiss,
@@ -144,8 +145,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
 
               {transfer.isError && (
                 <div className="transfer-send-error" role="alert">
-                  <p>Something went wrong. Your money hasn't left your account. Try again.</p>
-                  <p>{transfer.error.message}</p>
+                  <p>{sendErrorMessage}</p>
                 </div>
               )}
             </>

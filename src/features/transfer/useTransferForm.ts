@@ -11,6 +11,9 @@ import type { TransferFormValues } from './schema'
 import { steps } from './steps'
 import type { TransferStep } from './steps'
 
+const GENERIC_SEND_ERROR = "Something went wrong. Your money hasn't left your account."
+const DEFAULT_SEND_ERROR = `${GENERIC_SEND_ERROR} Try again.`
+
 export function useTransferForm(
   accounts: Account[],
   customer: Pick<Customer, 'dailyTransferLimit' | 'transferredToday'>,
@@ -19,6 +22,13 @@ export function useTransferForm(
   const [step, setStep] = useState<TransferStep>('recipient')
   const [invalidField, setInvalidField] = useState<FieldPath<TransferFormValues> | null>(null)
   const { transfer, refresh } = useTransferSubmission()
+  // The mock's generic error omits "Try again."; render the required copy once.
+  const sendErrorMessage =
+    transfer.error instanceof ApiError &&
+    transfer.error.message &&
+    transfer.error.message !== GENERIC_SEND_ERROR
+      ? transfer.error.message
+      : DEFAULT_SEND_ERROR
   const canClose = !transfer.isPending && (!transfer.isSuccess || refresh.isSuccess)
   const remainingDailyLimit = customer.dailyTransferLimit - customer.transferredToday
   const form = useForm<TransferFormValues>({
@@ -108,6 +118,7 @@ export function useTransferForm(
     invalidField,
     remainingDailyLimit,
     transfer,
+    sendErrorMessage,
     refresh,
     canClose,
     canDismiss,

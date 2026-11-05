@@ -47,12 +47,12 @@ async function enterNewRecipient(user: ReturnType<typeof userEvent.setup>) {
   await user.selectOptions(screen.getByRole('combobox', { name: 'Bank' }), 'OCBC')
 }
 
-async function reviewSavedTransfer(user: ReturnType<typeof userEvent.setup>) {
+async function reviewSavedTransfer(user: ReturnType<typeof userEvent.setup>, note = 'Dinner') {
   await payeesLoaded()
   await user.click(screen.getByRole('radio', { name: /Jamie Tan/ }))
   await user.click(screen.getByRole('button', { name: 'Continue' }))
   await user.type(screen.getByRole('textbox', { name: 'Amount' }), '120')
-  await user.type(screen.getByRole('textbox', { name: 'Note (optional)' }), 'Dinner')
+  await user.type(screen.getByRole('textbox', { name: 'Note (optional)' }), note)
   await user.click(screen.getByRole('button', { name: 'Continue' }))
   await screen.findByRole('heading', { name: 'Check the details' })
 }
@@ -338,6 +338,18 @@ describe('transfer recipient step', () => {
 })
 
 describe('transfer submission', () => {
+  it('shows the generic API failure once with the required retry guidance', async () => {
+    const user = userEvent.setup()
+    renderTransfer()
+    await reviewSavedTransfer(user, '#fail')
+    await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /^Something went wrong\. Your money hasn't left your account\. Try again\.$/,
+    )
+    expect(screen.queryByRole('heading', { name: 'Transfer sent' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Check the details' })).toBeInTheDocument()
+  })
+
   it('retains a failed draft and sends only an explicit retry', async () => {
     const user = userEvent.setup()
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
@@ -355,7 +367,7 @@ describe('transfer submission', () => {
     renderTransfer()
     await reviewSavedTransfer(user)
     await user.click(screen.getByRole('button', { name: 'Confirm transfer' }))
-    expect(await screen.findByRole('alert')).toHaveTextContent('Temporarily unavailable.')
+    expect(await screen.findByRole('alert')).toHaveTextContent(/^Temporarily unavailable\.$/)
     expect(screen.queryByRole('heading', { name: 'Transfer sent' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Check the details' })).toBeInTheDocument()
     expect(fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1)

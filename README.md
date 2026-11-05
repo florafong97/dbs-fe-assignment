@@ -1,146 +1,118 @@
-# Meridian Banking — Frontend Take-Home
+# Meridian Banking — Flora Fong
 
-Implementation note: the new-recipient Bank field uses a native select with a
-temporary hardcoded list: DBS, OCBC, UOB and POSB. The brief provides no bank
-catalogue or endpoint; replace this list with an authoritative source when one
-is available. Bank options remain available when saved payees are empty or fail
-to load.
-
-Transaction search uses the API's `q` parameter with a 300ms debounce to search
-the full dataset by description or category. The list shows the newest eight
-matches and the API's total match count. Clearing restores recent transactions;
-the supplied API has no pagination endpoint.
-
-Build a small banking app for one customer: a **dashboard** that shows her
-accounts and recent transactions, and a **three-step transfer** that sends money
-to a payee.
-
-You get a working React + TypeScript starter with a mock API already wired in,
-plus design tokens and a wireframe. You don't need a backend, and you don't need
-to invent data.
-
-|  |  |
-| --- | --- |
-| **Time** | Submit within **2 weeks** of receiving this. Most people need about **8–12 hours**; you don't need to use the full two weeks. |
-| **AI tools** | Allowed. In the follow-up call you explain your code and change it live, **without AI help**. See [How we assess](#4-how-we-assess). |
-| **Stack** | React 19, TypeScript, Vite, TanStack Query, React Hook Form, Zod, MSW, Vitest (all installed). Node 22. |
-
----
-
-## 1. Get started
-
-1. Open **https://github.com/Harmonice-Mundi/2026-fe-assignment/generate**
-   (or press **Use this template** → **Create a new repository**). Choose your
-   own account as the owner, keep it **Public**, and click **Create
-   repository**.
-2. Clone your copy and run:
-
-   ```bash
-   npm install
-   npm run dev        # http://localhost:5173
-   ```
-
-   You should see **"Mock API: connected"**. That screen is a placeholder;
-   replace it with your app.
-
-3. Read the docs below in order before writing code.
-
-## 2. What to read
-
-| Read | What it gives you |
-| --- | --- |
-| 1. [`brief/candidate-brief.md`](brief/candidate-brief.md) | **The spec.** What to build, what's required vs optional, exact copy. |
-| 2. [`wireframes/wireframe.md`](wireframes/wireframe.md) | Layout of each screen (low fidelity — no visual design). |
-| 3. [`brief/api-contract.md`](brief/api-contract.md) | Endpoints, types, errors, and test hooks. |
-
-Look these up when you need them:
-
-- [`DEPLOYMENT.md`](DEPLOYMENT.md): hosting settings and fixes for common mock-API
-  problems.
-- [`brief/design-tokens.css`](brief/design-tokens.css): colours, spacing and type
-  (already imported).
-- [`mock-api/README.md`](mock-api/README.md): the optional Node mock server.
-
-## 3. What's already in the starter
-
-| Path | What it is |
-| --- | --- |
-| `src/api/client.ts`, `src/api/types.ts` | Typed `apiFetch` helper and the API types. Build your queries on these. |
-| `src/lib/format.ts` | `formatMoney` and `formatShortDate`. Use them so amounts and dates match the brief. |
-| `src/mocks/`, `mock-api/` | The mock API. It runs in the browser, in tests, and in your deployed site. **Don't edit it.** |
-| `src/test/setup.ts` | Test setup. The mock data resets before every test. |
-| `src/App.tsx` | Placeholder screen. Replace it. |
-
-How you structure folders, components and features is **up to you** — that's
-part of what we look at.
-
-```bash
-npm run dev        # start the app
-npm test           # run tests once (npm run test:watch to keep watching)
-npm run lint       # ESLint
-npm run typecheck  # TypeScript
-npm run check      # lint + typecheck + tests
-npm run build      # production build into dist/
-```
-
-Run `npm run check` and `npm run build` before you submit; both should pass.
-
-## 4. How we assess
-
-1. **We open your deployed app** and run through the flows in the brief.
-2. **We read your code and README.** We look at how you structured the
-   project, the decisions you made, and whether the tests check real behaviour.
-3. **We have a follow-up call with you (about 45 minutes).** You share your
-   screen and:
-   - walk us through the structure and two or three decisions you made;
-   - trace one flow through the code (for example, what happens from
-     `Confirm transfer` until the balance updates);
-   - make **one or two small changes live**, without AI assistance. They are
-     the size of "add a validation rule" or "show one more field". Your
-     normal editor, docs and search are fine.
-
-**On AI:** use whatever tools you like while building. We are not checking
-whether code was AI-generated. We are checking that **you understand all of
-it** and made deliberate choices. If you can't explain a piece of code, it
-counts against you, whoever wrote it. Your README must say what you used AI
-for (see below).
-
-A smaller app you understand well scores better than a bigger one you can't
-explain.
-
-## 5. Submit
-
-1. **Deploy** to Netlify, Vercel or Cloudflare Pages (settings in
-   [`DEPLOYMENT.md`](DEPLOYMENT.md)). The deployed site must work with no local
-   server.
-2. **Replace this README** with your own, using the outline below.
-3. **Reply to the invitation email** with your repo URL and your deployed URL.
-
-### Your README
-
-```md
-# Meridian Banking — <Your Name>
-
-- Deployed: <url>
+- Deployed: https://florafong-dbs-fe.vercel.app
 - Run locally: `npm install && npm run dev`
 
 ## Project structure
-Folders and what each is responsible for.
+
+| Path                                          | Responsibility                                                                                                                |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `src/App.tsx`                                 | Composes the header, dashboard and transfer dialog; owns dialog visibility, shared customer/account queries and preferences.  |
+| `src/api/`                                    | Typed endpoint functions, `apiFetch`, API response types and `ApiError`.                                                      |
+| `src/pages/dashboard/`                        | Dashboard layout, balances, accounts, daily limit and independent transaction search.                                         |
+| `src/features/transfer/`                      | Dialog, step definitions, form workflow, Zod schema, payload conversion, fee calculations and submission/refresh mutations.   |
+| `src/components/`                             | Shared Header, Button, Chip, FormField, SearchInput and Skeleton components with colocated CSS and tests.                     |
+| `src/theme/`, `public/scripts/preferences.js` | Preference state/persistence and pre-paint restoration.                                                                       |
+| `src/lib/format.ts`                           | Shared SGD and date formatting.                                                                                               |
+| `src/test/`                                   | MSW lifecycle/reset setup and the native-dialog shim for jsdom. Tests are otherwise colocated with their features/components. |
+| `src/mocks/`, `mock-api/`                     | Supplied mock handlers and seed data. The optional Node server is not required.                                               |
+| `brief/`, `wireframes/`, `DEPLOYMENT.md`      | Requirements, API contract, design tokens, layout references and hosting instructions.                                        |
 
 ## Decisions and trade-offs
-Server state vs UI state, forms and validation, theming, anything you
-chose deliberately, and what you'd change.
+
+- **State ownership:** TanStack Query owns server data and caching. App fetches
+  customer/accounts because the header, dashboard and transfer share them.
+  Totals and remaining limits are derived from API data rather than stored.
+- **Transaction search:** TransactionList owns its input and calls
+  `useTransactionSearch`. The API's `q` parameter searches descriptions or
+  categories across the full dataset, with a 300ms debounce and abort signals.
+  Only the newest eight matches are displayed, alongside the API's total count.
+  Clearing restores recent transactions. The API has no pagination endpoint.
+- **Independent failures:** Customer/account failures show the dashboard error.
+  Transaction failures stay in their section, leaving balances and New transfer
+  usable. This deliberately narrows the brief's page-level error behavior and
+  lets accounts render before transactions finish.
+- **Forms and validation:** React Hook Form retains values across Back/Continue;
+  Zod defines validation once using current balances and the remaining limit.
+  Fields validate on blur/Continue and while correcting touched fields. Amounts
+  gain two decimal places on blur, and typing beyond two decimals is blocked.
+- **Theming:** Supplied CSS tokens cover Retail/Premium and light/dark. Theme
+  follows the system initially; localStorage restores saved choices before
+  paint. Segment defaults from the customer unless locally overridden, without
+  mutating API data. Lucide React supplies icons.
 
 ## Loading, empty and error states
-How you handled them, and how to see each one in the deployed app.
+
+| State                    | Behavior / how to see it                                                                                                                                                                                   |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initial loading          | Reload the app. Supplied responses take about 500ms; balances, accounts, daily limit and transactions use skeletons.                                                                                       |
+| Search loading           | Type a new transaction search. Loading stays within the transaction section and its input remains usable.                                                                                                  |
+| No transaction matches   | Search for `no-such-transaction`; the prescribed message and Clear search action appear.                                                                                                                   |
+| No payee matches         | Open New transfer and search for `no-such-payee`; clear the search or choose Send to someone new.                                                                                                          |
+| Validation               | Continue without a recipient, enter more than the selected account balance, or select savings and exceed the remaining daily limit. Errors are linked to inputs; Continue focuses the first invalid field. |
+| Transfer failure         | Put `#fail` in the optional note and confirm an otherwise valid transfer. The supplied API rejects it without moving money; review data remains available for retry/correction.                            |
+| Successful transfer      | Complete a valid transfer. The success panel shows the API reference and the dashboard refreshes before returning.                                                                                         |
+| Request/refresh failures | Dashboard, transactions and payees have Retry at their owning scope. A completed transfer has a separate Retry dashboard refresh action if its follow-up GETs fail.                                        |
+
+The supplied GET hooks are `?scenario=error`, `?scenario=empty` on list requests
+and `?delay=1500`. They belong on **API request URLs**, not the page URL. See the
+[API contract](brief/api-contract.md#test-and-demo-hooks).
+
+**TODO:** Add a reproducible deployed walkthrough for GET loading, empty and
+error states. There is no permanent debug control in the main UI.
 
 ## Tests
-What they cover and why you picked those cases.
+
+```bash
+npm test              # Vitest + React Testing Library + MSW
+npm run test:watch    # watch mode
+npm run check         # ESLint, TypeScript and tests
+npm run build         # production output in dist/
+npm run format:check  # Prettier check
+```
+
+The latest local `npm run check` passes all **114 tests**. The tests prioritize
+user behavior and financial/state boundaries:
+
+- **App:** concurrent requests, shared customer data, independent API failures,
+  retry, dialog reopening/focus, duplicate-send protection, successful dashboard
+  refresh and refresh recovery without another POST.
+- **DashboardPage:** supplied account/customer rendering, deposit-only totals,
+  remaining limits and page-level loading/error/transfer interactions.
+- **TransactionList:** full-history search, request parameters, match counts,
+  no matches, clearing, superseded requests, dates and amount direction.
+- **Transfer:** recipient selection/new recipients, retained entries, presets,
+  decimal input, insufficient balance, exhausted limits, note length, stale
+  balances, API field errors, review details and fee arithmetic.
+- **Shared components/themes:** labels and error descriptions, keyboard actions,
+  disabled controls, preference persistence and pre-paint restoration.
+
+MSW resets seed data between tests; edge cases override handlers within tests.
 
 ## AI use
-Which tools, and what for. Name two or three places where you changed,
-rejected or fixed what the AI produced, and why.
+
+I used **Codex with GPT-6.1**, using light reasoning for ideation, planning and
+light implementation, and medium/high reasoning for heavier implementation.
+Codex also assisted with tests, refactoring, code review and documentation.
+
+Examples of changes I directed to the AI-generated implementation:
+
+- **Reusable transfer feature:** I moved the dialog and related logic into
+  `src/features/transfer/` so another page could trigger the same transfer flow
+  without depending on the dashboard implementation.
+- **Shared UI components:** I extracted FormField, SearchInput, Button and Chip
+  to reuse their presentation and behavior across the app and keep styling
+  consistent as more screens are added.
+- **Separate transaction failures:** I kept transaction loading/errors within
+  TransactionList, separate from customer/account failures. This separates
+  concerns and keeps balances and the transfer action usable when transactions
+  cannot load.
+- **Amount formatting on blur:** I added automatic decimal formatting when the
+  amount field loses focus, such as `5` becoming `5.00` and `5.3` becoming
+  `5.30`. This keeps the displayed amount consistent without interrupting typing.
 
 ## Not done / known issues
-What you left out or would do with more time.
-```
+
+- The supplied API always charges zero fee. Frontend calculations support a
+  nonzero fee, but actual charging would require matching backend support.
+- Bank options are temporarily hardcoded to DBS, OCBC, UOB and POSB because no bank catalogue endpoint is provided. An authoritative catalogue would replace these options in a production integration.
