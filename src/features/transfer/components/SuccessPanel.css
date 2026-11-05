@@ -1,5 +1,6 @@
 .transfer-success {
   display: grid;
+  width: 100%;
   justify-items: center;
   gap: var(--space-4);
   text-align: center;
@@ -21,14 +22,14 @@
 }
 
 .success-recipient,
-.success-reference {
+.success-reference,
+.success-arrival {
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
 
 .success-reference strong {
-  display: block;
-  margin-top: var(--space-1);
+  margin-left: var(--space-2);
   color: var(--text);
   overflow-wrap: anywhere;
 }

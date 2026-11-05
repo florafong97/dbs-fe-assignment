@@ -252,11 +252,19 @@ describe('App transfer integration', () => {
     expect(screen.getByRole('button', { name: 'Close transfer' })).toBeDisabled()
     expect(screen.getByRole('dialog')).toHaveAttribute('closedby', 'none')
     await screen.findByRole('heading', { name: 'Transfer sent' }, { timeout: 3000 })
+    expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByRole('button', { name: 'Back to dashboard' })).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    expect(screen.queryByRole('list', { name: 'Accounts' })).not.toBeInTheDocument()
     const confirmation = screen.getByRole('region', { name: 'Transfer confirmation' })
     expect(responseBody).toBeDefined()
     expect(confirmation).toHaveTextContent(responseBody!.transfer.reference)
     const back = screen.getByRole('button', { name: 'Back to dashboard' })
     await waitFor(() => expect(back).toBeEnabled(), { timeout: 3000 })
+    expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'false')
+    expect(back).toHaveAttribute('aria-busy', 'false')
     expect(screen.getByRole('dialog')).toHaveAttribute('closedby', 'any')
     const posts = fetchSpy.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(posts).toHaveLength(1)

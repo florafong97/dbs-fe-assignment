@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import { formatAmountInput } from '../amount'
 import { useWatch } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
@@ -26,16 +27,19 @@ export default function AmountStep({ form, accounts, remainingDailyLimit }: Amou
     <div className="amount-step">
       <FormField id="from-account" label="From account" error={errors.fromAccountId?.message}>
         {(controlProps) => (
-          <select {...form.register('fromAccountId')} {...controlProps}>
-            <option value="" disabled>
-              Choose an account
-            </option>
-            {deposits.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name} · {account.maskedNumber}
+          <div className="form-field-select">
+            <select {...form.register('fromAccountId')} {...controlProps}>
+              <option value="" disabled>
+                Choose an account
               </option>
-            ))}
-          </select>
+              {deposits.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name} · {account.maskedNumber}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={18} aria-hidden="true" />
+          </div>
         )}
       </FormField>
       <p className="amount-help">Deposit accounts only</p>

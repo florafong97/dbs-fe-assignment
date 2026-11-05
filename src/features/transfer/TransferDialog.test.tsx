@@ -44,7 +44,7 @@ async function enterNewRecipient(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('button', { name: 'Send to someone new' }))
   await user.type(screen.getByLabelText('Recipient name'), 'Alex Lim')
   await user.type(screen.getByLabelText('Account number (8 digits)'), '00123456')
-  await user.type(screen.getByLabelText('Bank'), 'OCBC')
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Bank' }), 'OCBC')
 }
 
 async function reviewSavedTransfer(user: ReturnType<typeof userEvent.setup>) {
@@ -243,7 +243,7 @@ describe('transfer recipient step', () => {
     await user.tab()
     expect(await screen.findByText('Enter a valid 8-digit account number.')).toBeInTheDocument()
     expect(number).toHaveAccessibleDescription('Enter a valid 8-digit account number.')
-    await user.type(screen.getByLabelText('Bank'), 'DBS')
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Bank' }), 'DBS')
     await user.click(screen.getByRole('button', { name: 'Continue' }))
     expect(number).toHaveFocus()
     await user.clear(number)

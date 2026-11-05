@@ -22,7 +22,36 @@
 }
 
 .form-field-control::placeholder {
+  color: var(--text-subtle);
+}
+
+.form-field-select {
+  position: relative;
+  min-width: 0;
+}
+
+.form-field-select select {
+  appearance: none;
+  padding-right: var(--space-10);
+}
+
+.form-field-select select:has(option[value='']:checked),
+.form-field-select option[value=''] {
   color: var(--text-muted);
+}
+
+.form-field-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.form-field-select > svg {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
 .form-field-control[aria-invalid='true'] {

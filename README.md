@@ -1,5 +1,11 @@
 # Meridian Banking — Frontend Take-Home
 
+Implementation note: the new-recipient Bank field uses a native select with a
+temporary hardcoded list: DBS, OCBC, UOB and POSB. The brief provides no bank
+catalogue or endpoint; replace this list with an authoritative source when one
+is available. Bank options remain available when saved payees are empty or fail
+to load.
+
 Build a small banking app for one customer: a **dashboard** that shows her
 accounts and recent transactions, and a **three-step transfer** that sends money
 to a payee.

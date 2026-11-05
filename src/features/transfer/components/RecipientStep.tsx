@@ -10,6 +10,8 @@ import Skeleton from '@/components/Skeleton/Skeleton'
 import type { TransferFormValues } from '../schema'
 import './RecipientStep.css'
 
+const banks = ['DBS', 'OCBC', 'UOB', 'POSB'] as const
+
 interface RecipientStepProps {
   form: UseFormReturn<TransferFormValues>
   payees?: Payee[]
@@ -36,7 +38,6 @@ export default function RecipientStep({
     `${payee.name} ${payee.bank}`.toLowerCase().includes(query),
   )
   const { errors } = form.formState
-  const banks = [...new Set(payees?.map((payee) => payee.bank) ?? [])]
 
   useEffect(() => {
     if (mode === 'new') {
@@ -139,7 +140,6 @@ export default function RecipientStep({
             [
               ['name', 'Recipient name'],
               ['accountNumber', 'Account number (8 digits)'],
-              ['bank', 'Bank'],
             ] as const
           ).map(([field, label]) => {
             const error = errors.recipient?.[field]
@@ -152,17 +152,28 @@ export default function RecipientStep({
                     type="text"
                     autoComplete="off"
                     inputMode={field === 'accountNumber' ? 'numeric' : undefined}
-                    list={field === 'bank' ? 'recipient-bank-options' : undefined}
                   />
                 )}
               </FormField>
             )
           })}
-          <datalist id="recipient-bank-options">
-            {banks.map((bank) => (
-              <option key={bank} value={bank} />
-            ))}
-          </datalist>
+          <FormField id="recipient-bank" label="Bank" error={errors.recipient?.bank?.message}>
+            {(controlProps) => (
+              <div className="form-field-select">
+                <select {...form.register('recipient.bank')} {...controlProps}>
+                  <option value="" disabled>
+                    Choose a bank
+                  </option>
+                  {banks.map((bank) => (
+                    <option key={bank} value={bank}>
+                      {bank}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={18} aria-hidden="true" />
+              </div>
+            )}
+          </FormField>
         </div>
       )}
     </div>

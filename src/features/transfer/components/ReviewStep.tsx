@@ -42,6 +42,7 @@ export default function ReviewStep({ values, accounts, payees }: ReviewStepProps
             {recipient ? (
               <>
                 <span className="review-recipient-name">{recipient.name}</span>
+                {' · '}
                 <span className="review-recipient-details">
                   {recipient.bank} · {recipient.maskedNumber}
                 </span>

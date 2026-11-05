@@ -28,6 +28,7 @@ export default function App() {
         accounts={dashboard.accounts.data?.accounts}
         transactions={dashboard.transactions.data?.transactions}
         isPending={dashboard.isPending}
+        isRefreshing={isTransferOpen && dashboard.isFetching && !dashboard.isPending}
         isError={dashboard.isError}
         isFetching={dashboard.isFetching}
         onRetry={() => void dashboard.retry()}
