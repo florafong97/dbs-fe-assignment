@@ -14,6 +14,8 @@ interface AmountStepProps {
   remainingDailyLimit: number
 }
 
+const AMOUNT_PRESETS = [50, 100, 250, 500]
+
 export default function AmountStep({ form, accounts, remainingDailyLimit }: AmountStepProps) {
   const [fromAccountId, amount, note] = useWatch({
     control: form.control,
@@ -85,7 +87,7 @@ export default function AmountStep({ form, accounts, remainingDailyLimit }: Amou
         }}
       </FormField>
       <div className="amount-presets" role="group" aria-label="Suggested amounts">
-        {[50, 100, 250, 500].map((preset) => (
+        {AMOUNT_PRESETS.map((preset) => (
           <button
             type="button"
             key={preset}

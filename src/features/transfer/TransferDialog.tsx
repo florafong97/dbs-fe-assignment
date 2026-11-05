@@ -1,51 +1,17 @@
 import Button from '@/components/Button/Button'
 import SuccessPanel from './components/SuccessPanel'
 import TransferStepper from './components/TransferStepper'
-import { ApiError } from '@/api/client'
-import { toTransferPayload } from './payload'
 import ReviewStep from './components/ReviewStep'
 import AmountStep from './components/AmountStep'
 import { useQuery } from '@tanstack/react-query'
 import RecipientStep from './components/RecipientStep'
-import { payeesQueryOptions, useTransferSubmission } from './queries'
-import { useEffect, useRef, useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
-import type { FieldPath } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { payeesQueryOptions } from './queries'
+import { steps } from './steps'
+import { useTransferForm } from './useTransferForm'
+import { useEffect, useRef } from 'react'
 import type { Account, Customer } from '@/api/types'
-import { createTransferSchema } from './schema'
-import type { TransferFormValues } from './schema'
 import { X } from 'lucide-react'
 import './TransferDialog.css'
-
-type TransferStep = 'recipient' | 'amount' | 'review'
-
-const steps: {
-  id: TransferStep
-  label: string
-  title: string
-  fields: FieldPath<TransferFormValues>[]
-}[] = [
-  {
-    id: 'recipient',
-    label: 'Recipient',
-    title: 'Who are you sending to?',
-    fields: [
-      'recipientMode',
-      'payeeId',
-      'recipient.name',
-      'recipient.accountNumber',
-      'recipient.bank',
-    ],
-  },
-  {
-    id: 'amount',
-    label: 'Amount',
-    title: 'How much?',
-    fields: ['fromAccountId', 'amount', 'note'],
-  },
-  { id: 'review', label: 'Review', title: 'Check the details', fields: [] },
-]
 
 interface TransferDialogProps {
   accounts: Account[]
@@ -55,102 +21,34 @@ interface TransferDialogProps {
 
 export default function TransferDialog({ accounts, customer, onClose }: TransferDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const sendingRef = useRef(false)
-  const invalidFieldRef = useRef<FieldPath<TransferFormValues> | null>(null)
-  const { transfer, refresh } = useTransferSubmission()
-  const canClose = !transfer.isPending && (!transfer.isSuccess || refresh.isSuccess)
-  const [step, setStep] = useState<TransferStep>('recipient')
+  const {
+    form,
+    step,
+    currentStep,
+    invalidField,
+    remainingDailyLimit,
+    transfer,
+    refresh,
+    canClose,
+    canDismiss,
+    continueToNextStep,
+    goBack,
+    confirmTransfer,
+  } = useTransferForm(accounts, customer)
   const payees = useQuery(payeesQueryOptions)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const previousStep = useRef(step)
-  const remainingDailyLimit = customer.dailyTransferLimit - customer.transferredToday
-  const form = useForm<TransferFormValues>({
-    resolver: zodResolver(createTransferSchema(accounts, remainingDailyLimit)),
-    mode: 'onTouched',
-    shouldUnregister: false,
-    defaultValues: {
-      recipientMode: 'saved',
-      payeeId: '',
-      recipient: { name: '', accountNumber: '', bank: '' },
-      fromAccountId:
-        accounts.find((account) => account.type === 'checking')?.id ??
-        accounts.find((account) => account.type === 'savings')?.id ??
-        '',
-      amount: '',
-      note: '',
-    },
-  })
-  const { trigger, getValues, getFieldState } = form
-  const fromAccountId = useWatch({ control: form.control, name: 'fromAccountId' })
-  const currentStep = steps.find((item) => item.id === step)!
-
-  useEffect(() => {
-    if (!transfer.isSuccess && (getValues('amount') !== '' || getFieldState('amount').isTouched)) {
-      void trigger('amount')
-    }
-  }, [
-    fromAccountId,
-    accounts,
-    remainingDailyLimit,
-    getValues,
-    getFieldState,
-    trigger,
-    transfer.isSuccess,
-  ])
 
   useEffect(() => {
     if (previousStep.current !== step) {
-      if (invalidFieldRef.current) {
-        form.setFocus(invalidFieldRef.current)
-        invalidFieldRef.current = null
-      } else headingRef.current?.focus()
+      if (invalidField) form.setFocus(invalidField)
+      else headingRef.current?.focus()
     }
     previousStep.current = step
-  }, [step, form])
-
-  async function continueToNextStep() {
-    if (step === 'review' || transfer.isPending || transfer.isSuccess) return
-    if (await trigger(currentStep.fields, { shouldFocus: true, shouldTouch: true })) {
-      setStep(step === 'recipient' ? 'amount' : 'review')
-    }
-  }
-
-  function goBack() {
-    if (transfer.isError) transfer.reset()
-    setStep(step === 'review' ? 'amount' : 'recipient')
-  }
+  }, [step, form, invalidField])
 
   function closeDialog() {
-    if (canClose && !sendingRef.current) dialogRef.current?.close()
-  }
-
-  async function confirmTransfer() {
-    // Lock synchronously, before async validation, to reject rapid duplicate clicks.
-    if (sendingRef.current || transfer.isPending || transfer.isSuccess) return
-    sendingRef.current = true
-    try {
-      if (!(await trigger(undefined, { shouldTouch: true }))) {
-        const invalidStep = steps.find((item) =>
-          item.fields.some((field) => getFieldState(field).invalid),
-        )
-        if (invalidStep) {
-          invalidFieldRef.current =
-            invalidStep.fields.find((field) => getFieldState(field).invalid) ?? null
-          setStep(invalidStep.id)
-        }
-        return
-      }
-      await transfer.mutateAsync(toTransferPayload(getValues()))
-    } catch (error) {
-      if (error instanceof ApiError) {
-        for (const [name, message] of Object.entries(error.fields ?? {})) {
-          const field = steps.flatMap((item) => item.fields).find((path) => path === name)
-          if (field) form.setError(field, { type: 'server', message })
-        }
-      }
-    } finally {
-      sendingRef.current = false
-    }
+    if (canDismiss()) dialogRef.current?.close()
   }
 
   useEffect(() => {
@@ -238,7 +136,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
               )}
               {step === 'review' && (
                 <ReviewStep
-                  values={getValues()}
+                  values={form.getValues()}
                   accounts={accounts}
                   payees={payees.data?.payees ?? []}
                 />

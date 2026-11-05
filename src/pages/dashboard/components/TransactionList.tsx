@@ -4,9 +4,55 @@ import SearchInput from '@/components/SearchInput/SearchInput'
 import { useState } from 'react'
 import { useTransactionSearch } from '../queries'
 import { formatMoney, formatShortDate } from '@/lib/format'
+import type { Transaction } from '@/api/types'
 
 interface TransactionListProps {
   isDashboardLoading?: boolean
+}
+
+function TransactionListItemSkeleton({ key }: { key: number }) {
+  return (
+    <li className="transaction-row" key={key}>
+      <div className="transaction-details">
+        <p className="transaction-description">
+          <Skeleton />
+        </p>
+        <p className="transaction-meta">
+          <Skeleton className="skeleton-short" />
+        </p>
+      </div>
+      <div className="transaction-value">
+        <p className="transaction-amount">
+          <Skeleton className="skeleton-money" />
+        </p>
+      </div>
+    </li>
+  )
+}
+
+function TransactionListItem({ transaction }: { transaction: Transaction }) {
+  return (
+    <li key={transaction.id} className="transaction-row">
+      <div className="transaction-details">
+        <p className="transaction-description">{transaction.description}</p>
+        <p className="transaction-meta">
+          <span className="transaction-category">{transaction.category}</span>
+          {' · '}
+          <time dateTime={transaction.date}>{formatShortDate(transaction.date)}</time>
+          {transaction.status === 'pending' && <span className="pending-chip">Pending</span>}
+        </p>
+      </div>
+      <div className="transaction-value">
+        <p
+          className={`transaction-amount amount${transaction.direction === 'in' ? ' transaction-incoming' : ''}`}
+        >
+          {transaction.direction === 'in'
+            ? `+${formatMoney(transaction.amount)}`
+            : formatMoney(-transaction.amount)}
+        </p>
+      </div>
+    </li>
+  )
 }
 
 export default function TransactionList({ isDashboardLoading = false }: TransactionListProps) {
@@ -50,21 +96,7 @@ export default function TransactionList({ isDashboardLoading = false }: Transact
         ) : isLoading || matches === undefined ? (
           <ul className="transaction-list" aria-hidden="true">
             {Array.from({ length: 3 }, (_, index) => (
-              <li className="transaction-row" key={index}>
-                <div className="transaction-details">
-                  <p className="transaction-description">
-                    <Skeleton />
-                  </p>
-                  <p className="transaction-meta">
-                    <Skeleton className="skeleton-short" />
-                  </p>
-                </div>
-                <div className="transaction-value">
-                  <p className="transaction-amount">
-                    <Skeleton className="skeleton-money" />
-                  </p>
-                </div>
-              </li>
+              <TransactionListItemSkeleton key={index} />
             ))}
           </ul>
         ) : (
@@ -78,28 +110,7 @@ export default function TransactionList({ isDashboardLoading = false }: Transact
             {matches.length > 0 ? (
               <ul className="transaction-list">
                 {matches.map((transaction) => (
-                  <li key={transaction.id} className="transaction-row">
-                    <div className="transaction-details">
-                      <p className="transaction-description">{transaction.description}</p>
-                      <p className="transaction-meta">
-                        <span className="transaction-category">{transaction.category}</span>
-                        {' · '}
-                        <time dateTime={transaction.date}>{formatShortDate(transaction.date)}</time>
-                        {transaction.status === 'pending' && (
-                          <span className="pending-chip">Pending</span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="transaction-value">
-                      <p
-                        className={`transaction-amount amount${transaction.direction === 'in' ? ' transaction-incoming' : ''}`}
-                      >
-                        {transaction.direction === 'in'
-                          ? `+${formatMoney(transaction.amount)}`
-                          : formatMoney(-transaction.amount)}
-                      </p>
-                    </div>
-                  </li>
+                  <TransactionListItem transaction={transaction} />
                 ))}
               </ul>
             ) : (
