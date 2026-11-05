@@ -1,4 +1,5 @@
 import { parseAmountInput } from './amount'
+import { calculateTransferTotal, TRANSFER_FEE } from './fees'
 import { z } from 'zod'
 import type { Account } from '@/api/types'
 import { formatMoney } from '@/lib/format'
@@ -19,7 +20,11 @@ const newRecipientSchema = recipientFields.extend({
   bank: z.string().trim().min(2, 'Choose a bank.').max(30, 'Bank must be 30 characters or fewer.'),
 })
 
-export function createTransferSchema(accounts: Account[], remainingDailyLimit: number) {
+export function createTransferSchema(
+  accounts: Account[],
+  remainingDailyLimit: number,
+  fee = TRANSFER_FEE,
+) {
   return z
     .object({
       recipientMode: z.enum(['saved', 'new']),
@@ -65,8 +70,14 @@ export function createTransferSchema(accounts: Account[], remainingDailyLimit: n
       else if (amount === null) {
         amountError = 'Enter a valid amount with at most 2 decimal places.'
       } else if (amount < 1) amountError = 'Enter an amount of at least SGD 1.00.'
-      else if (account && Math.round(amount * 100) > Math.round(account.balance * 100)) {
-        amountError = `Amount can't be more than your available balance (${formatMoney(account.balance)}).`
+      else if (
+        account &&
+        Math.round(calculateTransferTotal(amount, fee) * 100) > Math.round(account.balance * 100)
+      ) {
+        amountError =
+          fee > 0
+            ? `Amount plus fee can't be more than your available balance (${formatMoney(account.balance)}).`
+            : `Amount can't be more than your available balance (${formatMoney(account.balance)}).`
       } else if (Math.round(amount * 100) > Math.round(remainingDailyLimit * 100)) {
         amountError = `This transfer exceeds your remaining daily limit (${formatMoney(remainingDailyLimit)}).`
       }

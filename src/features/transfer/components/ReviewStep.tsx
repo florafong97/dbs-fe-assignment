@@ -2,6 +2,7 @@ import { Info } from 'lucide-react'
 import type { Account, Payee } from '@/api/types'
 import { formatMoney } from '@/lib/format'
 import { parseAmountInput } from '../amount'
+import { calculateTransferTotal, TRANSFER_FEE } from '../fees'
 import type { TransferFormValues } from '../schema'
 import './ReviewStep.css'
 
@@ -28,6 +29,7 @@ export default function ReviewStep({ values, accounts, payees }: ReviewStepProps
         }
   const amount = parseAmountInput(values.amount)
   const formattedAmount = amount === null ? '—' : formatMoney(amount)
+  const formattedTotal = amount === null ? '—' : formatMoney(calculateTransferTotal(amount))
 
   return (
     <section className="review-step" aria-label="Transfer details">
@@ -58,7 +60,7 @@ export default function ReviewStep({ values, accounts, payees }: ReviewStepProps
         </div>
         <div className="review-row">
           <dt>Fee</dt>
-          <dd className="review-money">{formatMoney(0)}</dd>
+          <dd className="review-money">{formatMoney(TRANSFER_FEE)}</dd>
         </div>
         <div className="review-row">
           <dt>Note</dt>
@@ -66,7 +68,7 @@ export default function ReviewStep({ values, accounts, payees }: ReviewStepProps
         </div>
         <div className="review-row review-total">
           <dt>Total</dt>
-          <dd className="review-money">{formattedAmount}</dd>
+          <dd className="review-money">{formattedTotal}</dd>
         </div>
       </dl>
       <p className="review-arrival">

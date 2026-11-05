@@ -48,6 +48,22 @@ function issues(input: TransferFormValues, limit = 500) {
 }
 
 describe('transfer validation', () => {
+  it('includes a nonzero fee in the balance check, but counts only the amount against the daily limit', () => {
+    const withFee = createTransferSchema(accounts, 99.95, 0.3)
+    expect(withFee.safeParse({ ...values, amount: '99.95' }).success).toBe(true)
+    const result = withFee.safeParse({ ...values, amount: '99.96' })
+    expect(result.success).toBe(false)
+    if (result.success) throw new Error('Expected fee-inclusive balance validation to fail')
+    expect(result.error.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: ['amount'],
+          message: `Amount plus fee can't be more than your available balance (${formatMoney(100.25)}).`,
+        }),
+      ]),
+    )
+  })
+
   it('accepts saved payees without validating inactive new-recipient fields', () => {
     expect(schema.safeParse(values).success).toBe(true)
   })

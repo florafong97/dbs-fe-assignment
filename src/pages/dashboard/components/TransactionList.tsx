@@ -1,4 +1,5 @@
 import Button from '@/components/Button/Button'
+import Chip from '@/components/Chip/Chip'
 import Skeleton from '@/components/Skeleton/Skeleton'
 import SearchInput from '@/components/SearchInput/SearchInput'
 import { useState } from 'react'
@@ -39,7 +40,11 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
           <span className="transaction-category">{transaction.category}</span>
           {' · '}
           <time dateTime={transaction.date}>{formatShortDate(transaction.date)}</time>
-          {transaction.status === 'pending' && <span className="pending-chip">Pending</span>}
+          {transaction.status === 'pending' && (
+            <Chip tone="warning" className="pending-chip">
+              Pending
+            </Chip>
+          )}
         </p>
       </div>
       <div className="transaction-value">

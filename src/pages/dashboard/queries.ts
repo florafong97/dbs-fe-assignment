@@ -2,6 +2,8 @@ import { queryOptions, useQuery } from '@tanstack/react-query'
 import { getAccounts, getCustomer, getTransactions } from '@/api/banking'
 import { useEffect, useState } from 'react'
 
+const TRANSACTION_LIMIT_DEFAULT = 8
+
 // Resource keys allow transfers to invalidate all affected queries later.
 export const customerQueryOptions = queryOptions({
   queryKey: ['customer'],
@@ -46,7 +48,7 @@ export function useTransactionSearch(search: string) {
 
   // Clearing restores the cached default query immediately.
   const query = normalizedSearch ? debouncedSearch : ''
-  const transactions = useQuery(transactionsQueryOptions(8, query))
+  const transactions = useQuery(transactionsQueryOptions(TRANSACTION_LIMIT_DEFAULT, query))
 
   return { transactions, isSearchPending: normalizedSearch !== query }
 }

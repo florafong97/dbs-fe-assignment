@@ -1,4 +1,5 @@
 import { CreditCard, Landmark, PiggyBank } from 'lucide-react'
+import Chip from '@/components/Chip/Chip'
 import type { Account } from '@/api/types'
 import { formatMoney } from '@/lib/format'
 
@@ -13,7 +14,7 @@ export default function AccountCard({ account }: { account: Account }) {
       <p className="account-number amount">{account.maskedNumber}</p>
       <p className="account-balance amount">{formatMoney(account.balance)}</p>
       <p className="account-label">
-        {account.type === 'credit' ? 'Amount due' : 'Available balance'}
+        {account.type === 'credit' ? <Chip tone="danger">Amount due</Chip> : 'Available balance'}
       </p>
     </li>
   )
