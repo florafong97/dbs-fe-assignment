@@ -37,7 +37,7 @@ export default function DailyLimitCard({ customer }: { customer?: Customer }) {
           <Skeleton />
         </div>
       )}
-      <p className="dashboard-caption">Resets daily. Applies to all transfers.</p>
+      <p className="dashboard-caption limit-note">Resets daily. Applies to all transfers.</p>
     </aside>
   )
 }

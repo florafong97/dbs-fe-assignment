@@ -88,13 +88,24 @@
   box-shadow: var(--shadow-sm);
 }
 
-.header-greeting {
+.header-intro {
   grid-area: greeting;
-  margin: var(--space-4) 0 0;
+  margin-top: var(--space-4);
+}
+
+.header-greeting {
+  margin: 0;
   font-size: var(--text-2xl);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-tight);
+}
+
+.header-date {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
 @media (min-width: 1024px) {

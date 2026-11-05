@@ -25,7 +25,7 @@
 }
 
 .dashboard-caption {
-  margin: var(--space-2) 0 0;
+  margin: 0;
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
@@ -150,6 +150,11 @@
   overflow-wrap: anywhere;
 }
 
+.limit-note {
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+}
+
 @media (min-width: 1024px) {
   .account-list {
     grid-auto-flow: row;
@@ -194,11 +199,10 @@
 }
 
 .transaction-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  display: flex;
+  align-items: center;
   gap: var(--space-3);
-  padding-block: var(--space-4);
+  padding-block: var(--space-3);
 }
 
 .transaction-row + .transaction-row {
@@ -206,6 +210,7 @@
 }
 
 .transaction-details {
+  flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -218,6 +223,10 @@
 }
 
 .transaction-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
   margin: var(--space-1) 0 0;
   color: var(--text-muted);
   font-size: var(--text-xs);
@@ -228,6 +237,7 @@
 }
 
 .transaction-value {
+  flex-shrink: 0;
   text-align: right;
 }
 
@@ -237,13 +247,13 @@
 
 .pending-chip {
   display: inline-block;
-  margin-top: var(--space-1);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   background: var(--warning-soft);
   color: var(--warning);
   font-size: var(--text-xs);
   font-weight: var(--weight-medium);
+  margin-left: var(--space-1);
 }
 
 .transactions-empty {
@@ -305,7 +315,7 @@
 }
 
 .transaction-row {
-  min-height: 88px;
+  min-height: 72px;
 }
 
 .dashboard-feedback {
@@ -354,6 +364,10 @@
   background: var(--brand-hover);
 }
 
+.transfer-cta:active {
+  background: var(--brand-active);
+}
+
 .transfer-cta-placeholder {
   visibility: hidden;
   pointer-events: none;
@@ -377,6 +391,36 @@
     gap: var(--space-4);
   }
 
+  .transfer-cta {
+    background: var(--on-hero);
+    color: var(--hero-from);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .transfer-cta:hover {
+    background: var(--brand-soft);
+  }
+
+  .transfer-cta:active {
+    background: var(--on-hero);
+    box-shadow: none;
+  }
+
+  .transfer-cta:focus-visible {
+    outline-color: var(--on-hero);
+    outline-offset: var(--space-1);
+  }
+
+  :root[data-theme='dark'] .transfer-cta:hover {
+    background: var(--brand-hover);
+    color: var(--on-brand);
+  }
+
+  :root[data-theme='dark'] .transfer-cta:active {
+    background: var(--brand-active);
+    color: var(--on-brand);
+  }
+
   .transfer-cta-container {
     position: static;
     flex-shrink: 0;
@@ -395,7 +439,7 @@
   display: block;
   width: 100%;
   height: var(--space-2);
-  margin-block: var(--space-4);
+  margin-block: var(--space-3);
 }
 
 .daily-limit-progress {

@@ -13,14 +13,14 @@ export default function BalanceHero({
   onNewTransfer: () => void
 }) {
   const deposits = accounts?.filter((account) => account.type !== 'credit')
-  const total = deposits?.reduce((sum, account) => sum + Math.round(account.balance * 100), 0)
+  const totalCents = deposits?.reduce((sum, account) => sum + Math.round(account.balance * 100), 0)
 
   return (
     <section className="dashboard-panel balance-hero" aria-labelledby="balance-heading">
       <div className="balance-summary">
         <h2 id="balance-heading">Total available</h2>
         <p className="balance-amount amount">
-          {total === undefined ? <Skeleton /> : formatMoney(total / 100)}
+          {totalCents === undefined ? <Skeleton /> : formatMoney(totalCents / 100)}
         </p>
         <p className="balance-caption">
           {deposits === undefined ? (

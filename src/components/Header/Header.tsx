@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import type { Segment } from '@/api/types'
+import { formatGreeting, formatLongDate } from '@/lib/format'
 import './Header.css'
 
 interface HeaderProps {
@@ -20,8 +20,7 @@ export default function Header({
   onToggleTheme,
   onSelectSegment,
 }: HeaderProps) {
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const now = new Date()
   const name = firstName?.trim()
   const nameParts = [name, lastName?.trim()].filter((part): part is string => Boolean(part))
   const fullName = nameParts.join(' ')
@@ -88,10 +87,15 @@ export default function Header({
           </span>
         </div>
 
-        <h1 className="header-greeting">
-          {greeting}
-          {name ? `, ${name}` : ''}
-        </h1>
+        <div className="header-intro">
+          <h1 className="header-greeting">
+            {formatGreeting(now)}
+            {name ? `, ${name}` : ''}
+          </h1>
+          <time className="header-date" dateTime={now.toISOString()}>
+            {formatLongDate(now)}
+          </time>
+        </div>
       </div>
     </header>
   )

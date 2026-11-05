@@ -12,6 +12,10 @@ describe('FormField', () => {
     const input = screen.getByRole('textbox', { name: 'Recipient name' })
     expect(input).toHaveAttribute('aria-invalid', 'true')
     expect(input).toHaveAccessibleDescription('Enter at least two characters.')
+    input.focus()
+    expect(input).toHaveFocus()
+    expect(input).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByText('Enter at least two characters.')).toBeVisible()
     view.rerender(
       <FormField id="recipient-name" label="Recipient name">
         {(props) => <input {...props} />}

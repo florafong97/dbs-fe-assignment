@@ -64,6 +64,9 @@ export default function TransactionList({ transactions }: { transactions?: Trans
                         <span className="transaction-category">{transaction.category}</span>
                         {' · '}
                         <time dateTime={transaction.date}>{formatShortDate(transaction.date)}</time>
+                        {transaction.status === 'pending' && (
+                          <span className="pending-chip">Pending</span>
+                        )}
                       </p>
                     </div>
                     <div className="transaction-value">
@@ -74,9 +77,6 @@ export default function TransactionList({ transactions }: { transactions?: Trans
                           ? `+${formatMoney(transaction.amount)}`
                           : formatMoney(-transaction.amount)}
                       </p>
-                      {transaction.status === 'pending' && (
-                        <span className="pending-chip">Pending</span>
-                      )}
                     </div>
                   </li>
                 ))}

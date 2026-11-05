@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import type { ReactNode } from 'react'
+import { CircleAlert } from 'lucide-react'
 import './FormField.css'
 
 type FieldControlProps = {
@@ -46,7 +47,8 @@ export default function FormField({
       })}
       {error && (
         <p className="form-field-error" id={errorId}>
-          {error}
+          <CircleAlert size={16} aria-hidden="true" />
+          <span>{error}</span>
         </p>
       )}
     </div>

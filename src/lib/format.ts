@@ -29,3 +29,21 @@ const shortDate = new Intl.DateTimeFormat('en-SG', {
 export function formatShortDate(iso: string): string {
   return shortDate.format(new Date(iso))
 }
+
+// Header dates use browser-local time to match the greeting.
+const longDate = new Intl.DateTimeFormat('en-SG', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+})
+
+/** Browser-local date, e.g. `Thursday, 5 November`. */
+export function formatLongDate(date: Date): string {
+  return longDate.format(date)
+}
+
+/** Time-of-day greeting using the browser-local hour. */
+export function formatGreeting(date: Date): string {
+  const hour = date.getHours()
+  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+}

@@ -43,6 +43,21 @@
   cursor: pointer;
 }
 
-.search-input-clear:hover:not(:disabled) {
+.search-input-clear::before {
+  content: '';
+  position: absolute;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: transparent;
+  pointer-events: none;
+}
+
+.search-input-clear svg {
+  position: relative;
+  pointer-events: none;
+}
+
+.search-input-clear:hover:not(:disabled)::before {
   background: var(--surface-muted);
 }
