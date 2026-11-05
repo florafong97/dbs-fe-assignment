@@ -389,3 +389,42 @@
     padding-bottom: var(--space-8);
   }
 }
+
+.daily-limit-progress,
+.daily-limit-progress-placeholder {
+  display: block;
+  width: 100%;
+  height: var(--space-2);
+  margin-block: var(--space-4);
+}
+
+.daily-limit-progress {
+  appearance: none;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  color: var(--brand);
+  accent-color: var(--brand);
+}
+
+.daily-limit-progress::-webkit-progress-bar {
+  background: var(--surface-muted);
+  border-radius: var(--radius-full);
+}
+
+.daily-limit-progress::-webkit-progress-value {
+  background: var(--brand);
+  border-radius: var(--radius-full);
+}
+
+.daily-limit-progress::-moz-progress-bar {
+  background: var(--brand);
+  border-radius: var(--radius-full);
+}
+
+.daily-limit-progress-placeholder .skeleton {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
