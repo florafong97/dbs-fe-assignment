@@ -1,5 +1,6 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 import { getAccounts, getCustomer, getTransactions } from '@/api/banking'
+import { useEffect, useState } from 'react'
 
 // Resource keys allow transfers to invalidate all affected queries later.
 export const customerQueryOptions = queryOptions({
@@ -12,10 +13,10 @@ export const accountsQueryOptions = queryOptions({
   queryFn: ({ signal }) => getAccounts(signal),
 })
 
-export function transactionsQueryOptions(limit: number) {
+export function transactionsQueryOptions(limit: number, q = '') {
   return queryOptions({
-    queryKey: ['transactions', { limit }],
-    queryFn: ({ signal }) => getTransactions({ limit }, signal),
+    queryKey: ['transactions', { limit, q }],
+    queryFn: ({ signal }) => getTransactions({ limit, q }, signal),
   })
 }
 
@@ -23,15 +24,29 @@ export function useDashboardQueries() {
   // Independent queries start in the same render without waiting on each other.
   const customer = useQuery(customerQueryOptions)
   const accounts = useQuery(accountsQueryOptions)
-  const transactions = useQuery(transactionsQueryOptions(8))
 
   return {
     customer,
     accounts,
-    transactions,
-    isPending: customer.isPending || accounts.isPending || transactions.isPending,
-    isError: customer.isError || accounts.isError || transactions.isError,
-    isFetching: customer.isFetching || accounts.isFetching || transactions.isFetching,
-    retry: () => Promise.all([customer.refetch(), accounts.refetch(), transactions.refetch()]),
+    isPending: customer.isPending || accounts.isPending,
+    isError: customer.isError || accounts.isError,
+    isFetching: customer.isFetching || accounts.isFetching,
+    retry: () => Promise.all([customer.refetch(), accounts.refetch()]),
   }
+}
+
+export function useTransactionSearch(search: string) {
+  const normalizedSearch = search.trim().toLowerCase()
+  const [debouncedSearch, setDebouncedSearch] = useState(normalizedSearch)
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setDebouncedSearch(normalizedSearch), 300)
+    return () => window.clearTimeout(timeout)
+  }, [normalizedSearch])
+
+  // Clearing restores the cached default query immediately.
+  const query = normalizedSearch ? debouncedSearch : ''
+  const transactions = useQuery(transactionsQueryOptions(8, query))
+
+  return { transactions, isSearchPending: normalizedSearch !== query }
 }

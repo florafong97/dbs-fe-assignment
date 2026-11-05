@@ -6,6 +6,11 @@ catalogue or endpoint; replace this list with an authoritative source when one
 is available. Bank options remain available when saved payees are empty or fail
 to load.
 
+Transaction search uses the API's `q` parameter with a 300ms debounce to search
+the full dataset by description or category. The list shows the newest eight
+matches and the API's total match count. Clearing restores recent transactions;
+the supplied API has no pagination endpoint.
+
 Build a small banking app for one customer: a **dashboard** that shows her
 accounts and recent transactions, and a **three-step transfer** that sends money
 to a payee.

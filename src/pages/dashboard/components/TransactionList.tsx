@@ -2,21 +2,29 @@ import Button from '@/components/Button/Button'
 import Skeleton from '@/components/Skeleton/Skeleton'
 import SearchInput from '@/components/SearchInput/SearchInput'
 import { useState } from 'react'
-import type { Transaction } from '@/api/types'
+import { useTransactionSearch } from '../queries'
 import { formatMoney, formatShortDate } from '@/lib/format'
 
-export default function TransactionList({ transactions }: { transactions?: Transaction[] }) {
+interface TransactionListProps {
+  isDashboardLoading?: boolean
+}
+
+export default function TransactionList({ isDashboardLoading = false }: TransactionListProps) {
   const [search, setSearch] = useState('')
-  const query = search.trim().toLowerCase()
-  // Search only the eight loaded rows: immediate results without extra requests.
-  const matches = transactions?.filter(
-    (transaction) =>
-      transaction.description.toLowerCase().includes(query) ||
-      transaction.category.toLowerCase().includes(query),
-  )
+  const { transactions, isSearchPending } = useTransactionSearch(search)
+  const isLoading =
+    isDashboardLoading || isSearchPending || transactions.isPending || transactions.isFetching
+  const isError = !isSearchPending && transactions.isError
+  const query = search.trim()
+  const matches = transactions.data?.transactions
+  const total = transactions.data?.total ?? 0
 
   return (
-    <section className="transactions-section" aria-labelledby="transactions-heading">
+    <section
+      className="transactions-section"
+      aria-labelledby="transactions-heading"
+      aria-busy={isLoading}
+    >
       <div className="transactions-header">
         <h2 id="transactions-heading">Recent transactions</h2>
         <SearchInput
@@ -24,13 +32,24 @@ export default function TransactionList({ transactions }: { transactions?: Trans
           label="Search transactions"
           value={search}
           onValueChange={setSearch}
-          disabled={transactions === undefined}
+          disabled={isDashboardLoading || (transactions.isPending && !query)}
         />
       </div>
       <div className="dashboard-panel transactions-card">
-        {matches === undefined ? (
+        {isError ? (
+          <div className="transactions-empty">
+            <p role="alert">We couldn't load your transactions.</p>
+            <Button
+              variant="secondary"
+              disabled={transactions.isFetching}
+              onClick={() => void transactions.refetch()}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : isLoading || matches === undefined ? (
           <ul className="transaction-list" aria-hidden="true">
-            {Array.from({ length: 8 }, (_, index) => (
+            {Array.from({ length: 3 }, (_, index) => (
               <li className="transaction-row" key={index}>
                 <div className="transaction-details">
                   <p className="transaction-description">
@@ -52,7 +71,8 @@ export default function TransactionList({ transactions }: { transactions?: Trans
           <>
             {query && (
               <p className="transaction-count" role="status">
-                {`${matches.length} ${matches.length === 1 ? 'result' : 'results'} match your search`}
+                {`${total} ${total === 1 ? 'result' : 'results'} match your search`}
+                {total > matches.length && <span> Showing the newest {matches.length}.</span>}
               </p>
             )}
             {matches.length > 0 ? (

@@ -116,7 +116,7 @@ describe('App dashboard integration', () => {
       await loaded()
       expect([...requests.keys()].sort()).toEqual(['accounts', 'customer', 'transactions'])
       expect(requests.get('transactions')?.searchParams.get('limit')).toBe('8')
-      expect(rows()).toHaveLength(8)
+      await waitFor(() => expect(rows()).toHaveLength(8))
       expect([...counts.values()]).toEqual([1, 1, 1])
     } finally {
       release()
@@ -158,7 +158,59 @@ describe('App dashboard integration', () => {
     expect(screen.getByText('No transactions yet.')).toBeInTheDocument()
   })
 
-  it.each(['customer', 'accounts', 'transactions'])(
+  it('renders accounts while transactions are still loading', async () => {
+    let release!: () => void
+    const delayed = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    server.use(
+      http.get('*/api/transactions', async () => {
+        await delayed
+        return HttpResponse.json({ transactions: seed.transactions.slice(0, 8), total: 15 })
+      }),
+    )
+    renderApp()
+    try {
+      await loaded()
+      expect(screen.getByText('Everyday Checking')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'New transfer' })).toBeEnabled()
+      expect(transactionSection()).toHaveAttribute('aria-busy', 'true')
+      expect(within(transactionSection()).queryByRole('list')).not.toBeInTheDocument()
+    } finally {
+      release()
+    }
+    await waitFor(() => expect(rows()).toHaveLength(8))
+  })
+
+  it('keeps an initial transaction failure local and retries only transactions', async () => {
+    const user = userEvent.setup()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    server.use(
+      http.get(
+        '*/api/transactions',
+        () =>
+          HttpResponse.json(
+            { error: { code: 'INTERNAL_ERROR', message: 'Down' } },
+            { status: 500 },
+          ),
+        { once: true },
+      ),
+    )
+    renderApp()
+    expect(await within(transactionSection()).findByRole('alert')).toHaveTextContent(
+      "We couldn't load your transactions.",
+    )
+    await waitFor(() => expect(screen.getByRole('main')).toHaveAttribute('aria-busy', 'false'))
+    expect(screen.getByText('Everyday Checking')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'New transfer' })).toBeEnabled()
+    fetchSpy.mockClear()
+    await user.click(within(transactionSection()).getByRole('button', { name: 'Retry' }))
+    await waitFor(() => expect(rows()).toHaveLength(8))
+    expect(fetchSpy).toHaveBeenCalledTimes(1)
+    expect(String(fetchSpy.mock.calls[0][0])).toContain('/api/transactions?limit=8')
+  })
+
+  it.each(['customer', 'accounts'])(
     'recovers from a failed %s request on Retry',
     async (resource) => {
       const user = userEvent.setup()
@@ -181,7 +233,7 @@ describe('App dashboard integration', () => {
       await user.click(retry)
       await loaded()
       expect(screen.getByText('Everyday Checking')).toBeInTheDocument()
-      expect(rows()).toHaveLength(8)
+      await waitFor(() => expect(rows()).toHaveLength(8))
     },
   )
 

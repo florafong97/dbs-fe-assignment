@@ -26,7 +26,6 @@ export default function App() {
       <DashboardPage
         customer={dashboard.customer.data?.customer}
         accounts={dashboard.accounts.data?.accounts}
-        transactions={dashboard.transactions.data?.transactions}
         isPending={dashboard.isPending}
         isRefreshing={isTransferOpen && dashboard.isFetching && !dashboard.isPending}
         isError={dashboard.isError}

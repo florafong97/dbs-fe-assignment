@@ -16,8 +16,9 @@ export function getAccounts(signal?: AbortSignal) {
   return apiFetch<AccountsResponse>('/api/accounts', { signal })
 }
 
-export function getTransactions({ limit }: { limit: number }, signal?: AbortSignal) {
+export function getTransactions({ limit, q }: { limit: number; q?: string }, signal?: AbortSignal) {
   const params = new URLSearchParams({ limit: String(limit) })
+  if (q) params.set('q', q)
   return apiFetch<TransactionsResponse>(`/api/transactions?${params}`, { signal })
 }
 

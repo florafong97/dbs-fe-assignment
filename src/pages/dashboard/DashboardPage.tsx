@@ -4,13 +4,12 @@ import TransactionList from './components/TransactionList'
 import AccountCard from './components/AccountCard'
 import BalanceHero from './components/BalanceHero'
 import DailyLimitCard from './components/DailyLimitCard'
-import type { Account, Customer, Transaction } from '@/api/types'
+import type { Account, Customer } from '@/api/types'
 import './dashboard.css'
 
 interface DashboardPageProps {
   accounts?: Account[]
   customer?: Customer
-  transactions?: Transaction[]
   isPending: boolean
   isRefreshing?: boolean
   isError: boolean
@@ -22,7 +21,6 @@ interface DashboardPageProps {
 export default function DashboardPage({
   accounts: accountData,
   customer: customerData,
-  transactions: transactionData,
   isPending,
   isRefreshing = false,
   isError,
@@ -33,7 +31,6 @@ export default function DashboardPage({
   const isLoading = (isPending || isRefreshing) && !isError
   const accounts = isLoading ? undefined : accountData
   const customer = isLoading ? undefined : customerData
-  const transactions = isLoading ? undefined : transactionData
 
   return (
     <>
@@ -81,7 +78,7 @@ export default function DashboardPage({
                   </ul>
                 )}
               </section>
-              <TransactionList transactions={transactions} />
+              <TransactionList isDashboardLoading={isLoading} />
             </div>
             <DailyLimitCard customer={customer} />
           </>
