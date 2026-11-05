@@ -1,3 +1,4 @@
+import AmountStep from './components/AmountStep'
 import { useQuery } from '@tanstack/react-query'
 import RecipientStep from './components/RecipientStep'
 import { payeesQueryOptions } from './queries'
@@ -167,6 +168,9 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
               onRetry={() => void payees.refetch()}
             />
           )}
+          {step === 'amount' && (
+            <AmountStep form={form} accounts={accounts} remainingDailyLimit={remainingDailyLimit} />
+          )}
         </div>
         <footer className="transfer-dialog-footer">
           <button
@@ -176,7 +180,7 @@ export default function TransferDialog({ accounts, customer, onClose }: Transfer
           >
             {step === 'recipient' ? 'Cancel' : 'Back'}
           </button>
-          <button className="transfer-primary" type="submit" disabled={step !== 'recipient'}>
+          <button className="transfer-primary" type="submit" disabled={step === 'review'}>
             Continue
           </button>
         </footer>

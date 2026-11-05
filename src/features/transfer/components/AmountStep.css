@@ -1,0 +1,84 @@
+.amount-step {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.amount-help,
+.amount-balances p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.amount-help {
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.amount-input-wrapper {
+  position: relative;
+}
+
+.amount-currency {
+  position: absolute;
+  top: 50%;
+  left: var(--space-3);
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.amount-input {
+  padding-left: var(--space-16);
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-presets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.amount-presets button {
+  min-height: var(--tap-target);
+  padding: var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.amount-presets button:hover,
+.amount-presets button[aria-pressed='true'] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.amount-balances {
+  display: grid;
+  gap: var(--space-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-note-field {
+  position: relative;
+}
+
+.amount-note-field > label {
+  padding-right: var(--space-12);
+}
+
+.amount-note-field textarea {
+  resize: vertical;
+}
+
+.note-counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}

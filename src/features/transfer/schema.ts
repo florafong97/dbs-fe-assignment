@@ -1,3 +1,4 @@
+import { parseAmountInput } from './amount'
 import { z } from 'zod'
 import type { Account } from '@/api/types'
 import { formatMoney } from '@/lib/format'
@@ -58,10 +59,10 @@ export function createTransferSchema(accounts: Account[], remainingDailyLimit: n
       }
 
       const input = values.amount.trim()
-      const amount = Number(input)
+      const amount = parseAmountInput(input)
       let amountError: string | undefined
       if (!input) amountError = 'Enter an amount.'
-      else if (!/^\d+(?:\.\d{1,2})?$/.test(input) || !Number.isFinite(amount)) {
+      else if (amount === null) {
         amountError = 'Enter a valid amount with at most 2 decimal places.'
       } else if (amount < 1) amountError = 'Enter an amount of at least SGD 1.00.'
       else if (account && Math.round(amount * 100) > Math.round(account.balance * 100)) {

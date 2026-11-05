@@ -5,6 +5,7 @@ import { http, HttpResponse } from 'msw'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import type { Account, Customer } from '@/api/types'
 import { server } from '@/test/setup'
+import { formatMoney } from '@/lib/format'
 import seed from '../../../mock-api/db.json'
 import TransferDialog from './TransferDialog'
 
@@ -93,9 +94,66 @@ describe('transfer recipient step', () => {
     expect(screen.getByRole('radio', { name: /Marcus Lee/ })).toBeChecked()
     await user.click(screen.getByRole('button', { name: 'Continue' }))
     expect(await screen.findByRole('heading', { name: 'How much?' })).toHaveFocus()
-    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled()
     await user.click(screen.getByRole('button', { name: 'Back' }))
     expect(screen.getByRole('radio', { name: /Marcus Lee/ })).toBeChecked()
+    expect(posts).toBe(0)
+  })
+
+  it('blocks an over-balance amount without sending, revalidates account changes and retains values across steps', async () => {
+    const user = userEvent.setup()
+    let posts = 0
+    server.use(
+      http.post('*/api/transfers', () => {
+        posts++
+        return HttpResponse.json(
+          { error: { code: 'INTERNAL_ERROR', message: 'Unexpected transfer' } },
+          { status: 500 },
+        )
+      }),
+    )
+    renderTransfer()
+    await payeesLoaded()
+    await user.click(screen.getByRole('radio', { name: /Jamie Tan/ }))
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    const amount = screen.getByRole('textbox', { name: 'Amount' })
+    await user.type(amount, '5000.00')
+    await user.type(screen.getByRole('textbox', { name: 'Note (optional)' }), 'Dinner')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(
+      await screen.findByText(
+        `Amount can't be more than your available balance (${formatMoney(4280.55).replace(/\u00a0/g, ' ')}).`,
+      ),
+    ).toBeInTheDocument()
+    expect(amount).toHaveFocus()
+    expect(screen.queryByRole('heading', { name: 'Check the details' })).not.toBeInTheDocument()
+    expect(posts).toBe(0)
+    await user.selectOptions(screen.getByRole('combobox', { name: 'From account' }), 'acc_savings')
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/Amount can't be more than your available balance/),
+      ).not.toBeInTheDocument(),
+    )
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(await screen.findByRole('heading', { name: 'Check the details' })).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled()
+    await user.click(screen.getByRole('button', { name: 'Back' }))
+    expect(screen.getByRole('combobox', { name: 'From account' })).toHaveValue('acc_savings')
+    expect(screen.getByRole('textbox', { name: 'Amount' })).toHaveValue('5000.00')
+    expect(screen.getByRole('textbox', { name: 'Note (optional)' })).toHaveValue('Dinner')
+    await user.selectOptions(screen.getByRole('combobox', { name: 'From account' }), 'acc_checking')
+    await screen.findByText(/Amount can't be more than your available balance/)
+    await user.clear(screen.getByRole('textbox', { name: 'Amount' }))
+    await user.type(screen.getByRole('textbox', { name: 'Amount' }), '120')
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/Amount can't be more than your available balance/),
+      ).not.toBeInTheDocument(),
+    )
+    await user.click(screen.getByRole('button', { name: 'Back' }))
+    expect(screen.getByRole('radio', { name: /Jamie Tan/ })).toBeChecked()
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.getByRole('textbox', { name: 'Amount' })).toHaveValue('120.00')
     expect(posts).toBe(0)
   })
 
